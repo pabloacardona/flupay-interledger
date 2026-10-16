@@ -1,0 +1,25 @@
+# dependencies and builds
+node_modules/
+dist/
+.next/
+out/
+*.tsbuildinfo
+
+# secrets: NEVER commit
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+keys/*
+!keys/.gitkeep
+
+# SQLite databases
+*.db
+*.db-journal
+*.sqlite
+
+# misc
+.DS_Store
+*.log
+.vercel

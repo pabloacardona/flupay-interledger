@@ -1,0 +1,32 @@
+{
+  "name": "flupay",
+  "private": true,
+  "version": "0.0.0",
+  "description": "FluPay: HTTP 402 payments for AI agents on Open Payments (Interledger).",
+  "packageManager": "pnpm@10.34.7",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter \"./apps/**\" dev",
+    "dev:gateway": "pnpm --filter @flupay/gateway dev",
+    "dev:agent-wallet": "pnpm --filter @flupay/agent-wallet dev",
+    "dev:demo-api": "pnpm --filter @flupay/demo-api dev",
+    "dev:web": "pnpm --filter @flupay/web dev",
+    "typecheck": "pnpm -r typecheck",
+    "e2e:manual": "tsx scripts/e2e-manual-payment.ts",
+    "seed": "tsx scripts/seed.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "esbuild",
+      "prisma"
+    ]
+  }
+}

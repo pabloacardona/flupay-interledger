@@ -1,0 +1,10 @@
+# Per-route pricing. First matching pattern wins.
+upstream: http://localhost:3000
+wallet: https://ilp.interledger-test.dev/<site>
+routes:
+  - path: /api/premium/*
+    price: 0.05 USD
+  - path: /api/*
+    price: 0.01 USD
+  - path: /*
+    price: free

@@ -1,0 +1,9 @@
+{
+  "name": "@flupay/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'apps/web is generated in phase 5 (Next.js + Tailwind)'",
+    "typecheck": "echo 'no code yet'"
+  }
+}
