@@ -64,7 +64,7 @@ export async function addProduct(_prev: FormState, form: FormData): Promise<Form
   } catch (err) {
     return { error: messageOf(err) };
   }
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
   return {};
 }
 
@@ -73,16 +73,16 @@ export async function toggleProduct(form: FormData): Promise<void> {
   const id = String(form.get("id"));
   const product = await db.product.findFirst({ where: { id, merchantId: merchant.id } });
   if (product) await db.product.update({ where: { id }, data: { active: !product.active } });
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 }
 
 export async function regenerateApiKey(): Promise<void> {
   const merchant = await requireMerchant();
   await stashNewApiKey(await rotateApiKey(merchant.id));
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 }
 
 export async function dismissNewKey(): Promise<void> {
   (await cookies()).delete({ name: "flupay_new_key", path: "/dashboard" });
-  revalidatePath("/dashboard");
+  revalidatePath("/dashboard", "layout");
 }

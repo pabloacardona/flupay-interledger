@@ -7,7 +7,7 @@ const input =
   "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20";
 const label = "block text-sm font-medium mb-1.5";
 const button =
-  "rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-ink hover:opacity-90 disabled:opacity-50 disabled:cursor-wait";
+  "w-full sm:w-auto rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-ink hover:opacity-90 disabled:opacity-50 disabled:cursor-wait";
 
 function ErrorText({ state }: { state: FormState }) {
   return state.error ? <p className="text-sm text-bad">{state.error}</p> : null;
@@ -31,7 +31,7 @@ export function SignUpForm() {
         <p className="mt-1.5 text-xs text-muted">Payments from agents land here directly. FluPay never holds your money.</p>
       </div>
       <ErrorText state={state} />
-      <button className={button} disabled={pending}>{pending ? "Connecting wallet…" : "Create merchant account"}</button>
+      <button className={`${button} sm:w-full`} disabled={pending}>{pending ? "Connecting wallet…" : "Create merchant account"}</button>
     </form>
   );
 }
@@ -45,7 +45,7 @@ export function LogInForm() {
         <input className={`${input} font-mono`} id="apiKey" name="apiKey" placeholder="sk_…" required autoComplete="off" />
       </div>
       <ErrorText state={state} />
-      <button className={button} disabled={pending}>{pending ? "Signing in…" : "Sign in"}</button>
+      <button className={`${button} sm:w-full`} disabled={pending}>{pending ? "Signing in…" : "Sign in"}</button>
     </form>
   );
 }

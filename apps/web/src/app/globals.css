@@ -1,31 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f7f7f4;
+  --bg: #f8f8f6;
   --surface: #ffffff;
-  --ink: #16181d;
-  --muted: #5d6470;
-  --line: #e4e4de;
-  --brand: #4f3df5;
+  --ink: #1c1c1c;
+  --muted: #6b6b6b;
+  --line: #e8e8e4;
+  --grid: #ebebe7;
+  --brand: #fa5d19;
+  --brand-soft: #fff0e8;
   --brand-ink: #ffffff;
-  --ok: #157a4a;
-  --warn: #a15c07;
-  --bad: #b42318;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e0f12;
-    --surface: #17191e;
-    --ink: #eceef2;
-    --muted: #9aa1ad;
-    --line: #2a2d34;
-    --brand: #8b7dff;
-    --brand-ink: #0e0f12;
-    --ok: #4cc38a;
-    --warn: #f0a94a;
-    --bad: #ff7b72;
-  }
+  --ok: #12804f;
+  --warn: #a35a00;
+  --bad: #c0261a;
 }
 
 @theme inline {
@@ -34,7 +21,9 @@
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-grid: var(--grid);
   --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
   --color-brand-ink: var(--brand-ink);
   --color-ok: var(--ok);
   --color-warn: var(--warn);
@@ -46,4 +35,24 @@
 body {
   background: var(--bg);
   color: var(--ink);
+}
+
+/* Cell grid used behind the hero (Firecrawl-style blueprint). */
+.bg-cells {
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 164px 164px;
+  background-position: center top;
+}
+
+/* Small dot in the middle of each cell. */
+.bg-cell-dots {
+  background-image: radial-gradient(circle, #cfcfca 1.5px, transparent 1.6px);
+  background-size: 164px 164px;
+  background-position: calc(50% + 82px) 82px;
+}
+
+.fade-edges {
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 40%, #000 55%, transparent 100%);
 }
