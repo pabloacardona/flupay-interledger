@@ -20,6 +20,18 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 
 > Pero en naranja, y no debe ser una web, sería un dashboard.
 
+## Prompt 5
+
+> En español la interfaz.
+
+## Prompt 6
+
+> Listo, pero ahí está solo la forma para crear una cuenta como negocio; falta la del usuario, o sea el que quiere la clave del MCP. Ahora mismo está solo la de negocio.
+
+## Prompt 7
+
+> Súbelo a prod.
+
 ## Decisions (answered in a multiple-choice question)
 
 - What the agent buys: **products (checkout)**.
@@ -34,3 +46,6 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 - Verified locally against the test network: real incoming payments created, 402 with the shared `Payment-Required` contract, fake proofs rejected.
 - Vercel project `flupay-web`, domains `useflupay.space` and `www.useflupay.space`.
 - UI: dashboard app with sidebar (Overview, Products, Charges, Developers), Firecrawl-inspired light style with grid background and an orange accent; split sign-in/sign-up screens with an interactive 402 flow demo. No marketing landing: `/` redirects to the dashboard or sign-in.
+- UI copy in Spanish.
+- Agent-owner side in the same dashboard: sign-up choice "Soy un negocio / Tengo un agente", owner key (ok_...) as login, "Mis agentes" (register agent, per-purchase max), agent detail (approve cap in the wallet, revoke, MCP key shown once + rotation, Claude Code / Desktop config, live activity, payments).
+- Agent wallet REST API now requires an admin key (server-to-server from the dashboard); new `POST /owners`, `GET /agents?owner_id=`, `POST /agents/:id/key`; grant callback returns to `/agents/:id`.

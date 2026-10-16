@@ -77,3 +77,17 @@ model PlatformToken {
   expiresAt   DateTime
   updatedAt   DateTime @updatedAt
 }
+
+/// Person who funds AI agents. Agents and their grants live in the agent wallet service;
+/// this row links a dashboard login to the owner record there.
+model AgentOwner {
+  id            String   @id @default(cuid())
+  name          String
+  email         String?
+  /// Owner id in the agent wallet service.
+  walletOwnerId String   @unique
+  /// SHA-256 of the owner key (ok_...). Shown once; it is the login.
+  apiKeyHash    String   @unique
+  apiKeyLast4   String
+  createdAt     DateTime @default(now())
+}

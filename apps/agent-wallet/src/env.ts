@@ -9,6 +9,8 @@ const envSchema = z.object({
   AGENT_WALLET_PUBLIC_URL: z.url().default("http://localhost:4000"),
   ENCRYPTION_KEY: z.string().regex(/^[0-9a-f]{64}$/i, "ENCRYPTION_KEY must be 32 bytes hex (openssl rand -hex 32)"),
   DASHBOARD_URL: z.url().default("http://localhost:3001"),
+  /** Shared secret for the owner REST API, used server-to-server by the FluPay dashboard. */
+  AGENT_WALLET_ADMIN_KEY: z.string().min(24).optional(),
   /** Max time to wait for an outgoing payment to settle. */
   PAYMENT_TIMEOUT_MS: z.coerce.number().int().default(15_000),
   // Open Payments client identity. Optional at boot so the service can start

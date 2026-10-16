@@ -41,8 +41,8 @@ export function LogInForm() {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label className={label} htmlFor="apiKey">API key secreta</label>
-        <input className={`${input} font-mono`} id="apiKey" name="apiKey" placeholder="sk_…" required autoComplete="off" />
+        <label className={label} htmlFor="apiKey">Clave secreta</label>
+        <input className={`${input} font-mono`} id="apiKey" name="apiKey" placeholder="sk_… u ok_…" required autoComplete="off" />
       </div>
       <ErrorText state={state} />
       <button className={`${button} sm:w-full`} disabled={pending}>{pending ? "Entrando…" : "Iniciar sesión"}</button>

@@ -6,7 +6,7 @@ export default function LogInPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Iniciar sesión</h1>
-        <p className="mt-1 text-sm text-muted">Usa la API key secreta de tu negocio.</p>
+        <p className="mt-1 text-sm text-muted">Usa tu clave secreta: sk_… si eres un negocio, ok_… si tienes agentes.</p>
       </div>
       <LogInForm />
       <p className="text-sm text-muted">

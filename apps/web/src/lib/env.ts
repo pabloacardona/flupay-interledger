@@ -8,6 +8,10 @@ const envSchema = z.object({
   PUBLIC_URL: z.url().default("http://localhost:3001"),
   /** Charge lifetime before the incoming payment expires. */
   CHARGE_TTL_SECONDS: z.coerce.number().int().default(300),
+  /** Agent wallet service (MCP server) and its admin key, for the agent-owner side of the dashboard. */
+  AGENT_WALLET_API_URL: z.url().default("https://mcp.useflupay.space"),
+  AGENT_WALLET_MCP_URL: z.url().default("https://mcp.useflupay.space/mcp"),
+  AGENT_WALLET_ADMIN_KEY: z.string().min(24).optional(),
   // Open Payments identity of the FluPay platform (signs grant requests).
   FLUPAY_CLIENT_WALLET_ADDRESS: z.url().optional(),
   FLUPAY_CLIENT_KEY_ID: z.string().min(1).optional(),

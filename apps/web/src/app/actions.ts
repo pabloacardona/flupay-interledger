@@ -1,13 +1,13 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { ApiError } from "@/lib/errors";
 import { createMerchant, createProduct, findMerchantByApiKey, rotateApiKey } from "@/lib/merchants";
-import { endSession, requireMerchant, startSession, stashNewApiKey } from "@/lib/session";
+import { clearSecret, endSession, requireMerchant, startSession, stashNewApiKey } from "@/lib/session";
+import { findOwnerByKey } from "@/lib/owners";
 
 export interface FormState {
   error?: string;
@@ -27,7 +27,7 @@ export async function signUp(_prev: FormState, form: FormData): Promise<FormStat
       })
       .parse(Object.fromEntries(form));
     const { merchant, apiKey } = await createMerchant(input);
-    await startSession(merchant.id);
+    await startSession("m", merchant.id);
     await stashNewApiKey(apiKey);
     merchantId = merchant.id;
   } catch (err) {
@@ -39,9 +39,15 @@ export async function signUp(_prev: FormState, form: FormData): Promise<FormStat
 
 export async function logIn(_prev: FormState, form: FormData): Promise<FormState> {
   const apiKey = String(form.get("apiKey") ?? "").trim();
+  if (apiKey.startsWith("ok_")) {
+    const owner = await findOwnerByKey(apiKey);
+    if (!owner) return { error: "Clave inválida" };
+    await startSession("o", owner.id);
+    redirect("/agents");
+  }
   const merchant = apiKey ? await findMerchantByApiKey(apiKey) : null;
-  if (!merchant) return { error: "API key inválida" };
-  await startSession(merchant.id);
+  if (!merchant) return { error: "Clave inválida" };
+  await startSession("m", merchant.id);
   redirect("/dashboard");
 }
 
@@ -83,6 +89,6 @@ export async function regenerateApiKey(): Promise<void> {
 }
 
 export async function dismissNewKey(): Promise<void> {
-  (await cookies()).delete({ name: "flupay_new_key", path: "/dashboard" });
+  await clearSecret("merchantKey");
   revalidatePath("/dashboard", "layout");
 }
