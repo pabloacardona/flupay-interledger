@@ -2,15 +2,17 @@
 
 Tool: Claude Code (Claude Opus 5.5)
 
+_Prompts are verbatim except for spelling and punctuation fixes; content is unchanged._
+
 ## Prompt 1
 
-> Vamos a empezar este preyecto para una hackathon te paso el siguiente archivo para crear la base del proyecto; '/Users/kevinmanotas/Downloads/PRD Pagos para agentes con Open Payments.md'
+> Vamos a empezar este proyecto para una hackathon. Te paso el siguiente archivo para crear la base del proyecto: '/Users/kevinmanotas/Downloads/PRD Pagos para agentes con Open Payments.md'
 
 (The attached PRD describes the gateway, agent wallet, demo API, dashboard, 402 protocol, data model and phase plan.)
 
 ## Prompt 2
 
-> mira nada de peaje, tood el cidido yfilleros debe ser en ingles
+> Mira, nada de "peaje": todo el código y los ficheros deben estar en inglés.
 
 ## Result
 
