@@ -23,3 +23,6 @@ keys/*
 .DS_Store
 *.log
 .vercel
+
+# generated Prisma clients
+**/src/generated/

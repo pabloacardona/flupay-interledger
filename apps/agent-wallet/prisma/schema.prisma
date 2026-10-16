@@ -1,0 +1,87 @@
+// Agent wallet database (buyer side). Separate from the gateway database on purpose:
+// in real life the gateway and the agent wallet belong to different owners.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+/// Person who funds one or more agents. No login in the MVP.
+model Owner {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  agents    Agent[]
+  createdAt DateTime @default(now())
+}
+
+model Agent {
+  id               String    @id @default(cuid())
+  ownerId          String
+  owner            Owner     @relation(fields: [ownerId], references: [id])
+  name             String
+  walletAddress    String
+  authServer       String
+  resourceServer   String
+  assetCode        String
+  assetScale       Int
+  /// SHA-256 of the MCP API key. The key itself is shown once and never stored.
+  mcpApiKeyHash    String    @unique
+  /// Per-request price ceiling, minor units of the agent's asset.
+  maxPriceMinor    Int
+  /// JSON array of merchant wallet addresses. Empty array = any merchant.
+  allowedMerchants String    @default("[]")
+  grants           Grant[]
+  payments         Payment[]
+  createdAt        DateTime  @default(now())
+}
+
+/// Outgoing-payment grant approved by the owner. One active grant per agent.
+model Grant {
+  id             String   @id @default(cuid())
+  agentId        String
+  agent          Agent    @relation(fields: [agentId], references: [id])
+  /// pending | active | revoked | rejected
+  status         String
+  budgetMinor    Int
+  /// ISO 8601 repeating interval, e.g. R/2026-10-16T00:00:00Z/P1M
+  interval       String
+  continueUri    String
+  /// Encrypted (AES-256-GCM).
+  continueToken  String
+  /// Our nonce for interact.finish, and the AS nonce, used to verify the callback hash.
+  clientNonce    String
+  interactFinish String
+  /// Encrypted (AES-256-GCM). Null until the owner approves.
+  accessToken    String?
+  manageUrl      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([agentId, status])
+}
+
+model Payment {
+  id                 String   @id @default(cuid())
+  agentId            String
+  agent              Agent    @relation(fields: [agentId], references: [id])
+  targetUrl          String
+  incomingUrl        String
+  merchantWallet     String
+  priceMinor         Int
+  quoteUrl           String?
+  debitMinor         Int?
+  outgoingPaymentUrl String?
+  /// quoted | sent | completed | rejected_budget | failed
+  status             String
+  errorCode          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  /// Never pay the same charge twice.
+  @@unique([agentId, incomingUrl])
+}
