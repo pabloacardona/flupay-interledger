@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { formatAmount } from "@flupay/shared";
 import { db } from "./db.js";
-import { env } from "./env.js";
+import { env, opCredentials } from "./env.js";
 import { WalletError } from "./errors.js";
 import type { Agent } from "./generated/prisma/client.js";
 import { listActivity } from "./activity.js";
@@ -27,7 +27,7 @@ function publicAgent(agent: Agent) {
 }
 
 export function registerRoutes(app: FastifyInstance): void {
-  app.get("/health", async () => ({ ok: true }));
+  app.get("/health", async () => ({ ok: true, open_payments_configured: opCredentials() !== null }));
 
   app.post("/agents", async (req, reply) => {
     const body = z

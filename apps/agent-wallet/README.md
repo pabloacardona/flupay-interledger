@@ -2,12 +2,16 @@
 
 Buyer side of FluPay: a REST API for owners and an MCP server for agents. The agent pays HTTP 402 charges with Open Payments, inside a spending cap the owner approves once.
 
-## Run
+## Production
+
+Deployed on Vercel (project `flupay-agent-wallet`, root directory `apps/agent-wallet`) at **https://mcp.useflupay.space**. MCP endpoint: `https://mcp.useflupay.space/mcp`. Data lives in Neon Postgres, provisioned through the Vercel Marketplace; migrations run on every build (`vercel-build`).
+
+## Run locally
 
 ```bash
-cp ../../.env.example ../../.env      # fill AGENT_WALLET_* and ENCRYPTION_KEY
-pnpm prisma migrate deploy            # creates agent-wallet.db
-pnpm dev                              # http://localhost:4000
+vercel env pull .env.local --yes      # Neon URLs + ENCRYPTION_KEY (from the repo root)
+cp .env.example .env                  # AGENT_WALLET_CLIENT_* (Open Payments identity)
+pnpm --filter @flupay/agent-wallet dev   # http://localhost:4000
 ```
 
 ## Owner flow (REST)

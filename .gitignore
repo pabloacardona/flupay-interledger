@@ -26,3 +26,4 @@ keys/*
 
 # generated Prisma clients
 **/src/generated/
+.env*
