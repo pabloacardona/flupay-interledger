@@ -17,6 +17,7 @@ This project follows the [Interledger Hackathon AI policy](https://interledger.o
 | `apps/*/package.json`, `packages/shared/package.json`, `apps/gateway/gateway.yaml` | 2026-10-16_01 | Skeletons, no logic | _pending_ |
 | `packages/shared/src/*` (`protocol402.ts`, `money.ts`, `crypto.ts`, `op-client.ts`) | [2026-10-16_02](prompts/2026-10-16_02_mcp-server.md) | 402 contract (zod), minor-unit money helpers, AES-256-GCM, OP client factory | _pending_ |
 | `apps/agent-wallet/**` (Prisma schema, grants, payments, REST routes, MCP server) | 2026-10-16_02 | Full implementation, checked against the installed SDK type definitions | _pending_ |
+| `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | [2026-10-16_03](prompts/2026-10-16_03_gateway.md) | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | _pending_ |
 
 ## Files with little or no AI involvement
 
@@ -50,4 +51,4 @@ Result: rules applied from now on: merge `origin/main` and log the prompt on eve
 **Prompt 4**
 > Sí, arranca la fase 0 y la fase 1, ya confirmé que demo-api me corresponde a mí.
 
-Result: phase 0 done (pnpm 10.34.7 installed per user with npm because `corepack enable` needs admin on Windows; `pnpm install` and `pnpm typecheck` pass, lockfile unchanged). Phase 1 in progress.
+Result: phase 0 done (pnpm 10.34.7 installed per user with npm because `corepack enable` needs admin on Windows; `pnpm install` and `pnpm typecheck` pass, lockfile unchanged). Phase 1 done: `apps/demo-api` with `/`, `/health`, `/api/weather`, `/api/premium/report`.
