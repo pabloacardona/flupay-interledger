@@ -52,3 +52,8 @@ Result: rules applied from now on: merge `origin/main` and log the prompt on eve
 > Sí, arranca la fase 0 y la fase 1, ya confirmé que demo-api me corresponde a mí.
 
 Result: phase 0 done (pnpm 10.34.7 installed per user with npm because `corepack enable` needs admin on Windows; `pnpm install` and `pnpm typecheck` pass, lockfile unchanged). Phase 1 done: `apps/demo-api` with `/`, `/health`, `/api/weather`, `/api/premium/report`.
+
+**Prompt 5**
+> Cada vez que terminas una fase, quiero que hagas pull para traer los cambios de mi compañero.
+
+Result: rule extended: pull `origin/main` at the start of every prompt, before every phase commit and again after every phase push.
