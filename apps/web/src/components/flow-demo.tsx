@@ -4,13 +4,13 @@ import { useState } from "react";
 
 const steps = [
   {
-    key: "Catalog",
+    key: "Catálogo",
     icon: "⋮⋮",
     request: "GET /api/stores/cafe-andino/products",
     status: "200 OK",
     tone: "text-ok",
     body: `{ "products": [{ "id": "prd_8f2", "name": "Café de origen 250 g", "price": "200.00 COP" }] }`,
-    note: "The agent reads the catalog for free.",
+    note: "El agente consulta el catálogo gratis.",
   },
   {
     key: "Checkout",
@@ -19,25 +19,25 @@ const steps = [
     status: "402 Payment Required",
     tone: "text-warn",
     body: `Payment-Required: { "incoming": "https://ilp…/incoming-payments/7c1…", "amount": "20000", "assetCode": "COP", "assetScale": 2 }`,
-    note: "FluPay creates an Open Payments charge on the store's wallet.",
+    note: "FluPay crea un cobro de Open Payments en la wallet de la tienda.",
   },
   {
-    key: "Pay",
+    key: "Pago",
     icon: "⁘",
-    request: "quote.create → outgoingPayment.create (owner's capped grant)",
-    status: "completed",
+    request: "quote.create → outgoingPayment.create (permiso con tope del dueño)",
+    status: "completado",
     tone: "text-ok",
     body: `{ "debit": "200.00 COP", "remaining_budget": "600.00 COP" }`,
-    note: "The agent pays from its own wallet, inside the cap its owner approved once.",
+    note: "El agente paga desde su propia wallet, dentro del tope que su dueño aprobó una vez.",
   },
   {
-    key: "Order",
+    key: "Orden",
     icon: "✓",
     request: "POST /checkout  Authorization: OpenPayments https://ilp…/incoming-payments/7c1…",
     status: "200 OK",
     tone: "text-ok",
     body: `{ "status": "confirmed", "order": { "product": "Café de origen 250 g", "paid": "200.00 COP" } }`,
-    note: "Proof verified and consumed once. The money is already in the store's wallet.",
+    note: "Prueba de pago verificada y usada una sola vez. El dinero ya está en la wallet de la tienda.",
   },
 ];
 
@@ -71,7 +71,7 @@ export function FlowDemo() {
           ))}
         </div>
         <button
-          aria-label="Next step"
+          aria-label="Siguiente paso"
           onClick={() => setI((i + 1) % steps.length)}
           className="grid h-11 w-16 place-items-center rounded-xl bg-brand text-brand-ink hover:opacity-90"
         >

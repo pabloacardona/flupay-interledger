@@ -16,8 +16,8 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
         <SidebarNav />
         <div className="mt-auto space-y-3 px-3">
           <div className="rounded-lg border border-line bg-surface p-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-muted">Test network</p>
-            <p className="mt-1 text-xs">Payments on Interledger test wallets.</p>
+            <p className="font-mono text-[10px] uppercase tracking-wider text-muted">Red de prueba</p>
+            <p className="mt-1 text-xs">Pagos en wallets de prueba de Interledger.</p>
           </div>
         </div>
       </aside>
@@ -28,7 +28,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             <p className="truncate font-mono text-[11px] text-muted">{merchant.walletAddress} · {merchant.assetCode}</p>
           </div>
           <form action={logOut}>
-            <button className="rounded-lg bg-[#ededea] px-3 py-1.5 text-sm hover:bg-[#e3e3df]">Sign out</button>
+            <button className="rounded-lg bg-[#ededea] px-3 py-1.5 text-sm hover:bg-[#e3e3df]">Cerrar sesión</button>
           </form>
         </header>
         <main className="relative flex-1">

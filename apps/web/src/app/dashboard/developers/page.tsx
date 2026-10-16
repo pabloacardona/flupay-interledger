@@ -8,11 +8,11 @@ import { readNewApiKey, requireMerchant } from "@/lib/session";
 export const dynamic = "force-dynamic";
 
 const endpoints = [
-  ["POST", "/api/v1/charges", "Create a charge from product_id or amount. Returns payment_required and incoming_url."],
-  ["GET", "/api/v1/charges/:id", "Live status: pending, paid, consumed, expired."],
-  ["POST", "/api/v1/charges/verify", "Verify the agent's proof and consume it (single use). Returns { valid, reason, charge }."],
-  ["GET", "/api/v1/products", "List your products."],
-  ["POST", "/api/v1/products", "Create a product { name, description?, price }."],
+  ["POST", "/api/v1/charges", "Crea un cobro con product_id o amount. Devuelve payment_required e incoming_url."],
+  ["GET", "/api/v1/charges/:id", "Estado en vivo: pending, paid, consumed, expired."],
+  ["POST", "/api/v1/charges/verify", "Verifica la prueba de pago del agente y la consume (un solo uso). Devuelve { valid, reason, charge }."],
+  ["GET", "/api/v1/products", "Lista tus productos."],
+  ["POST", "/api/v1/products", "Crea un producto { name, description?, price }."],
 ];
 
 function Code({ children }: { children: string }) {
@@ -30,7 +30,7 @@ export default async function Developers() {
   const base = env.PUBLIC_URL;
   const store = `${base}/api/stores/${merchant.slug}`;
 
-  const node = `// Your checkout endpoint (Express). Agents get a 402 until they pay.
+  const node = `// Tu endpoint de checkout (Express). Los agentes reciben 402 hasta que pagan.
 app.post("/checkout", async (req, res) => {
   const headers = { authorization: \`Bearer \${process.env.FLUPAY_KEY}\`, "content-type": "application/json" };
   const proof = req.get("authorization"); // "OpenPayments <incoming url>"
@@ -40,7 +40,7 @@ app.post("/checkout", async (req, res) => {
       method: "POST", headers,
       body: JSON.stringify({ authorization: proof, product_id: req.body.product_id }),
     }).then((r) => r.json());
-    if (check.valid) return res.json(await createOrder(req.body)); // paid, single use
+    if (check.valid) return res.json(await createOrder(req.body)); // pagado, un solo uso
   }
 
   const charge = await fetch("${base}/api/v1/charges", {
@@ -58,21 +58,21 @@ app.post("/checkout", async (req, res) => {
 
   return (
     <>
-      <PageHeader title="Developers" description="API key, agent endpoints and the charges API." />
+      <PageHeader title="Desarrolladores" description="API key, endpoints para agentes y la API de cobros." />
       {newKey && <NewKeyBanner apiKey={newKey} />}
 
-      <Card title="Secret API key" action={<form action={regenerateApiKey}><button className="text-xs font-medium text-muted hover:text-ink">Regenerate</button></form>}>
+      <Card title="API key secreta" action={<form action={regenerateApiKey}><button className="text-xs font-medium text-muted hover:text-ink">Regenerar</button></form>}>
         <div className="flex items-center gap-3">
           <code className="rounded-lg bg-bg px-3 py-2 font-mono text-sm">sk_••••••••••••••••{merchant.apiKeyLast4}</code>
-          <p className="text-sm text-muted">Send it as <code className="font-mono">Authorization: Bearer sk_…</code>. Regenerating disables the old key.</p>
+          <p className="text-sm text-muted">Envíala como <code className="font-mono">Authorization: Bearer sk_…</code>. Al regenerarla, la anterior deja de funcionar.</p>
         </div>
       </Card>
 
-      <Card title="Hosted agent store (no code)">
+      <Card title="Tienda para agentes (sin código)">
         <div className="space-y-2">
           {[
-            ["GET", `${store}/products`, "Free catalog"],
-            ["POST", `${store}/checkout`, "402 until paid · body { product_id }"],
+            ["GET", `${store}/products`, "Catálogo gratis"],
+            ["POST", `${store}/checkout`, "402 hasta que se pague · body { product_id }"],
           ].map(([m, url, note]) => (
             <div key={url} className="flex flex-wrap items-center gap-2">
               <span className="w-12 rounded-md bg-brand-soft px-2 py-1 text-center font-mono text-xs font-semibold text-brand">{m}</span>
@@ -84,7 +84,7 @@ app.post("/checkout", async (req, res) => {
         </div>
       </Card>
 
-      <Card title="Charges API">
+      <Card title="API de cobros">
         <div className="-mx-5 -mt-5 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <tbody className="divide-y divide-line">
@@ -100,7 +100,7 @@ app.post("/checkout", async (req, res) => {
         </div>
         <div className="mt-5 space-y-4">
           <div>
-            <p className="mb-2 text-sm font-medium">In your checkout (Node / Express)</p>
+            <p className="mb-2 text-sm font-medium">En tu checkout (Node / Express)</p>
             <Code>{node}</Code>
           </div>
           <div>
@@ -110,9 +110,9 @@ app.post("/checkout", async (req, res) => {
         </div>
       </Card>
 
-      <Card title="For agents">
+      <Card title="Para agentes">
         <p className="mb-3 text-sm text-muted">
-          Agents pay with the FluPay MCP wallet: <code className="font-mono">paid_fetch</code> handles the 402, pays within the owner&apos;s cap and retries with the proof.
+          Los agentes pagan con la wallet MCP de FluPay: <code className="font-mono">paid_fetch</code> maneja el 402, paga dentro del tope del dueño y reintenta con la prueba de pago.
         </p>
         <Code>{`claude mcp add --transport http flupay https://mcp.useflupay.space/mcp --header "x-agent-key: fpk_..."`}</Code>
       </Card>

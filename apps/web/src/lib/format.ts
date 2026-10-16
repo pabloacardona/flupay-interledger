@@ -12,8 +12,8 @@ export const chargeStatusStyle: Record<string, string> = {
 };
 
 export const chargeStatusLabel: Record<string, string> = {
-  pending: "Awaiting payment",
-  paid: "Paid",
-  consumed: "Paid · delivered",
-  expired: "Expired",
+  pending: "Esperando pago",
+  paid: "Pagado",
+  consumed: "Pagado · entregado",
+  expired: "Vencido",
 };

@@ -5,18 +5,18 @@ import { StatusBadge } from "./ui";
 export function ChargesTable({ merchant, charges }: { merchant: Merchant; charges: (Charge & { product: Product | null })[] }) {
   const money = moneyOf(merchant);
   if (charges.length === 0) {
-    return <p className="text-sm text-muted">No charges yet. When an agent hits your checkout, it shows up here in real time.</p>;
+    return <p className="text-sm text-muted">Aún no hay cobros. Cuando un agente llegue a tu checkout, aparece aquí en tiempo real.</p>;
   }
   return (
     <div className="-mx-5 -mb-5 overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead className="border-b border-line bg-bg font-mono text-[11px] uppercase tracking-wider text-muted">
           <tr>
-            <th className="px-5 py-2.5 font-medium">Time</th>
-            <th className="px-5 py-2.5 font-medium">Item</th>
-            <th className="px-5 py-2.5 font-medium">Agent</th>
-            <th className="px-5 py-2.5 font-medium">Amount</th>
-            <th className="px-5 py-2.5 font-medium">Status</th>
+            <th className="px-5 py-2.5 font-medium">Hora</th>
+            <th className="px-5 py-2.5 font-medium">Producto</th>
+            <th className="px-5 py-2.5 font-medium">Agente</th>
+            <th className="px-5 py-2.5 font-medium">Monto</th>
+            <th className="px-5 py-2.5 font-medium">Estado</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-line">

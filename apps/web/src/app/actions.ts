@@ -14,16 +14,16 @@ export interface FormState {
 }
 
 const messageOf = (err: unknown) =>
-  err instanceof ApiError ? err.message : err instanceof z.ZodError ? err.issues.map((i) => i.message).join(", ") : "Something went wrong";
+  err instanceof ApiError ? err.message : err instanceof z.ZodError ? err.issues.map((i) => i.message).join(", ") : "Algo salió mal";
 
 export async function signUp(_prev: FormState, form: FormData): Promise<FormState> {
   let merchantId: string;
   try {
     const input = z
       .object({
-        name: z.string().trim().min(2, "Business name is required"),
-        email: z.union([z.email("Invalid email"), z.literal("")]).optional(),
-        walletAddress: z.string().trim().min(5, "Wallet address is required"),
+        name: z.string().trim().min(2, "El nombre del negocio es obligatorio"),
+        email: z.union([z.email("Correo inválido"), z.literal("")]).optional(),
+        walletAddress: z.string().trim().min(5, "La wallet address es obligatoria"),
       })
       .parse(Object.fromEntries(form));
     const { merchant, apiKey } = await createMerchant(input);
@@ -40,7 +40,7 @@ export async function signUp(_prev: FormState, form: FormData): Promise<FormStat
 export async function logIn(_prev: FormState, form: FormData): Promise<FormState> {
   const apiKey = String(form.get("apiKey") ?? "").trim();
   const merchant = apiKey ? await findMerchantByApiKey(apiKey) : null;
-  if (!merchant) return { error: "Invalid API key" };
+  if (!merchant) return { error: "API key inválida" };
   await startSession(merchant.id);
   redirect("/dashboard");
 }
@@ -55,9 +55,9 @@ export async function addProduct(_prev: FormState, form: FormData): Promise<Form
   try {
     const input = z
       .object({
-        name: z.string().trim().min(1, "Name is required").max(100),
+        name: z.string().trim().min(1, "El nombre es obligatorio").max(100),
         description: z.string().trim().max(500).optional(),
-        price: z.string().trim().regex(/^\d+(\.\d+)?$/, "Price must be a number, e.g. 15000"),
+        price: z.string().trim().regex(/^\d+(\.\d+)?$/, "El precio debe ser un número, por ejemplo 15000"),
       })
       .parse(Object.fromEntries(form));
     await createProduct(merchant, input);

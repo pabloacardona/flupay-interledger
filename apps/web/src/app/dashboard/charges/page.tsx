@@ -18,10 +18,10 @@ export default async function Charges() {
     <>
       <AutoRefresh />
       <PageHeader
-        title="Charges"
-        description="Every 402 creates a single-use Open Payments charge on your wallet. Paid charges unlock one order."
+        title="Cobros"
+        description="Cada 402 crea un cobro de Open Payments de un solo uso en tu wallet. Cada cobro pagado libera una orden."
       />
-      <Card title="All charges" action={<LiveDot />}>
+      <Card title="Todos los cobros" action={<LiveDot />}>
         <ChargesTable merchant={merchant} charges={charges} />
       </Card>
     </>

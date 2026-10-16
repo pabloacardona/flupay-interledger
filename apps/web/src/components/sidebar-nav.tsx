@@ -4,10 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
-  { href: "/dashboard", label: "Overview", icon: "M3 12l9-8 9 8M5 10v10h14V10" },
-  { href: "/dashboard/products", label: "Products", icon: "M4 7l8-4 8 4-8 4-8-4zm0 0v10l8 4 8-4V7" },
-  { href: "/dashboard/charges", label: "Charges", icon: "M3 6h18v12H3zM3 10h18" },
-  { href: "/dashboard/developers", label: "Developers", icon: "M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14" },
+  { href: "/dashboard", label: "Resumen", icon: "M3 12l9-8 9 8M5 10v10h14V10" },
+  { href: "/dashboard/products", label: "Productos", icon: "M4 7l8-4 8 4-8 4-8-4zm0 0v10l8 4 8-4V7" },
+  { href: "/dashboard/charges", label: "Cobros", icon: "M3 6h18v12H3zM3 10h18" },
+  { href: "/dashboard/developers", label: "Desarrolladores", icon: "M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14" },
 ];
 
 export function SidebarNav() {

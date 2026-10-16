@@ -53,7 +53,7 @@ export function LiveDot() {
         <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60" />
         <span className="relative inline-flex size-2 rounded-full bg-brand" />
       </span>
-      Live
+      En vivo
     </span>
   );
 }

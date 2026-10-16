@@ -19,20 +19,20 @@ export default async function Products() {
 
   return (
     <>
-      <PageHeader title="Products" description={`What agents can buy. Prices in ${merchant.assetCode}.`} />
-      <Card title="New product"><ProductForm currency={merchant.assetCode} /></Card>
-      <Card title={`Catalog (${products.length})`}>
+      <PageHeader title="Productos" description={`Lo que los agentes pueden comprar. Precios en ${merchant.assetCode}.`} />
+      <Card title="Nuevo producto"><ProductForm currency={merchant.assetCode} /></Card>
+      <Card title={`Catálogo (${products.length})`}>
         {products.length === 0 ? (
-          <p className="text-sm text-muted">No products yet.</p>
+          <p className="text-sm text-muted">Aún no hay productos.</p>
         ) : (
           <div className="-mx-5 -mb-5 overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-line bg-bg font-mono text-[11px] uppercase tracking-wider text-muted">
                 <tr>
-                  <th className="px-5 py-2.5 font-medium">Product</th>
-                  <th className="px-5 py-2.5 font-medium">Product ID</th>
-                  <th className="px-5 py-2.5 font-medium">Price</th>
-                  <th className="px-5 py-2.5 font-medium">Sold</th>
+                  <th className="px-5 py-2.5 font-medium">Producto</th>
+                  <th className="px-5 py-2.5 font-medium">ID del producto</th>
+                  <th className="px-5 py-2.5 font-medium">Precio</th>
+                  <th className="px-5 py-2.5 font-medium">Vendidos</th>
                   <th className="px-5 py-2.5 font-medium" />
                 </tr>
               </thead>
@@ -54,7 +54,7 @@ export default async function Products() {
                     <td className="px-5 py-3 text-right">
                       <form action={toggleProduct}>
                         <input type="hidden" name="id" value={p.id} />
-                        <button className="text-xs font-medium text-muted hover:text-ink">{p.active ? "Hide" : "Show"}</button>
+                        <button className="text-xs font-medium text-muted hover:text-ink">{p.active ? "Ocultar" : "Mostrar"}</button>
                       </form>
                     </td>
                   </tr>

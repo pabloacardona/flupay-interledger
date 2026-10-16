@@ -18,20 +18,20 @@ export function SignUpForm() {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label className={label} htmlFor="name">Business name</label>
+        <label className={label} htmlFor="name">Nombre del negocio</label>
         <input className={input} id="name" name="name" placeholder="Café Andino" required />
       </div>
       <div>
-        <label className={label} htmlFor="email">Email (optional)</label>
+        <label className={label} htmlFor="email">Correo (opcional)</label>
         <input className={input} id="email" name="email" type="email" placeholder="hola@cafeandino.co" />
       </div>
       <div>
-        <label className={label} htmlFor="walletAddress">Open Payments wallet address</label>
-        <input className={input} id="walletAddress" name="walletAddress" placeholder="$ilp.interledger-test.dev/your-store" required />
-        <p className="mt-1.5 text-xs text-muted">Payments from agents land here directly. FluPay never holds your money.</p>
+        <label className={label} htmlFor="walletAddress">Wallet address de Open Payments</label>
+        <input className={input} id="walletAddress" name="walletAddress" placeholder="$ilp.interledger-test.dev/tu-tienda" required />
+        <p className="mt-1.5 text-xs text-muted">Los pagos de los agentes llegan aquí directo. FluPay nunca toca tu dinero.</p>
       </div>
       <ErrorText state={state} />
-      <button className={`${button} sm:w-full`} disabled={pending}>{pending ? "Connecting wallet…" : "Create merchant account"}</button>
+      <button className={`${button} sm:w-full`} disabled={pending}>{pending ? "Conectando wallet…" : "Crear cuenta de negocio"}</button>
     </form>
   );
 }
@@ -41,11 +41,11 @@ export function LogInForm() {
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label className={label} htmlFor="apiKey">Secret API key</label>
+        <label className={label} htmlFor="apiKey">API key secreta</label>
         <input className={`${input} font-mono`} id="apiKey" name="apiKey" placeholder="sk_…" required autoComplete="off" />
       </div>
       <ErrorText state={state} />
-      <button className={`${button} sm:w-full`} disabled={pending}>{pending ? "Signing in…" : "Sign in"}</button>
+      <button className={`${button} sm:w-full`} disabled={pending}>{pending ? "Entrando…" : "Iniciar sesión"}</button>
     </form>
   );
 }
@@ -55,18 +55,18 @@ export function ProductForm({ currency }: { currency: string }) {
   return (
     <form action={action} className="grid gap-3 sm:grid-cols-[1fr_1fr_8rem_auto] sm:items-end">
       <div>
-        <label className={label} htmlFor="p-name">Product</label>
+        <label className={label} htmlFor="p-name">Producto</label>
         <input className={input} id="p-name" name="name" placeholder="Café de origen 250 g" required />
       </div>
       <div>
-        <label className={label} htmlFor="p-desc">Description</label>
+        <label className={label} htmlFor="p-desc">Descripción</label>
         <input className={input} id="p-desc" name="description" placeholder="Tostión media, Huila" />
       </div>
       <div>
-        <label className={label} htmlFor="p-price">Price ({currency})</label>
+        <label className={label} htmlFor="p-price">Precio ({currency})</label>
         <input className={input} id="p-price" name="price" inputMode="decimal" placeholder="200" required />
       </div>
-      <button className={button} disabled={pending}>{pending ? "Adding…" : "Add"}</button>
+      <button className={button} disabled={pending}>{pending ? "Agregando…" : "Agregar"}</button>
       <div className="sm:col-span-4"><ErrorText state={state} /></div>
     </form>
   );

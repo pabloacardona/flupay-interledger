@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
         <div className="flex flex-1 items-center py-12">
           <div className="w-full">{children}</div>
         </div>
-        <p className="text-xs text-muted">Built on Open Payments · Interledger test network</p>
+        <p className="text-xs text-muted">Construido sobre Open Payments · red de prueba de Interledger</p>
       </div>
       <div className="relative hidden overflow-hidden border-l border-line lg:block">
         <div className="bg-cells fade-edges absolute inset-0" aria-hidden />
@@ -20,12 +20,12 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
         <Sparkle className="absolute bottom-[12%] right-[12%]" />
         <div className="relative flex h-full flex-col justify-center px-12">
           <h2 className="text-4xl font-semibold leading-tight tracking-tight">
-            Agents are trying to buy.
+            Los agentes quieren comprar.
             <br />
-            <span className="text-brand">Let them pay you.</span>
+            <span className="text-brand">Deja que te paguen.</span>
           </h2>
           <p className="mt-4 max-w-md text-ink/70">
-            Charges over HTTP 402 and Open Payments. The agent pays from its own capped wallet, straight to yours.
+            Cobros con HTTP 402 y Open Payments. El agente paga desde su propia wallet con tope, directo a la tuya.
           </p>
           <div className="mt-10 max-w-2xl">
             <FlowDemo />

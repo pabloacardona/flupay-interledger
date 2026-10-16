@@ -28,39 +28,39 @@ export default async function Overview() {
   return (
     <>
       <AutoRefresh />
-      <PageHeader title="Overview" description="Revenue from AI agents buying your products." />
+      <PageHeader title="Resumen" description="Ingresos de agentes de IA que compran tus productos." />
       {newKey && <NewKeyBanner apiKey={newKey} />}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Revenue" value={money(paid._sum.amountMinor ?? 0)} hint="All time, from agents" accent />
-        <Stat label="Last 24 h" value={money(today._sum.amountMinor ?? 0)} />
-        <Stat label="Paid orders" value={String(paid._count)} />
-        <Stat label="Awaiting payment" value={String(pending)} hint={`${activeProducts} active products`} />
+        <Stat label="Ingresos" value={money(paid._sum.amountMinor ?? 0)} hint="Total, de agentes" accent />
+        <Stat label="Últimas 24 h" value={money(today._sum.amountMinor ?? 0)} />
+        <Stat label="Órdenes pagadas" value={String(paid._count)} />
+        <Stat label="Esperando pago" value={String(pending)} hint={`${activeProducts} productos activos`} />
       </div>
 
       {activeProducts === 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-brand/60 bg-surface p-5">
           <div>
-            <p className="font-semibold">Add your first product</p>
-            <p className="text-sm text-muted">Agents can only buy what is in your catalog.</p>
+            <p className="font-semibold">Agrega tu primer producto</p>
+            <p className="text-sm text-muted">Los agentes solo pueden comprar lo que está en tu catálogo.</p>
           </div>
-          <Link href="/dashboard/products" className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-ink">Add product</Link>
+          <Link href="/dashboard/products" className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-brand-ink">Agregar producto</Link>
         </div>
       )}
 
-      <Card title="Recent charges" action={<LiveDot />}>
+      <Card title="Cobros recientes" action={<LiveDot />}>
         <ChargesTable merchant={merchant} charges={recent} />
       </Card>
 
-      <Card title="Agent checkout">
+      <Card title="Checkout para agentes">
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-md bg-brand-soft px-2 py-1 font-mono text-xs font-semibold text-brand">POST</span>
           <code className="min-w-0 flex-1 overflow-x-auto rounded-lg bg-bg px-3 py-2 font-mono text-xs">{checkoutUrl}</code>
           <CopyButton value={checkoutUrl} />
         </div>
         <p className="mt-3 text-sm text-muted">
-          Give this to agents, or integrate the charges API in your own checkout from{" "}
-          <Link href="/dashboard/developers" className="font-medium text-brand">Developers</Link>.
+          Compártelo con los agentes, o integra la API de cobros en tu propio checkout desde{" "}
+          <Link href="/dashboard/developers" className="font-medium text-brand">Desarrolladores</Link>.
         </p>
       </Card>
     </>

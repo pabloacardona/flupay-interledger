@@ -5,15 +5,15 @@ export default function SignUpPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Create your merchant account</h1>
+        <h1 className="text-2xl font-semibold">Crea tu cuenta de negocio</h1>
         <p className="mt-1 text-sm text-muted">
-          You need an Open Payments wallet. On the test network:{" "}
+          Necesitas una wallet de Open Payments. En la red de prueba:{" "}
           <a className="underline" href="https://wallet.interledger-test.dev" target="_blank" rel="noreferrer">wallet.interledger-test.dev</a>
         </p>
       </div>
       <SignUpForm />
       <p className="text-sm text-muted">
-        Already have an account? <Link className="font-medium text-brand" href="/login">Sign in</Link>
+        ¿Ya tienes cuenta? <Link className="font-medium text-brand" href="/login">Inicia sesión</Link>
       </p>
     </div>
   );
