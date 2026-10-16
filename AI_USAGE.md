@@ -25,3 +25,24 @@ _To be filled in as the team writes code by hand._
 ## Verification
 
 All Open Payments SDK calls are checked against [openpayments.dev](https://openpayments.dev/es/) and the official `@interledger/open-payments` SDK, since AI can invent or use outdated APIs.
+
+## Prompt log
+
+Every prompt, in order. Full session notes live in [`prompts/`](prompts).
+
+### Gateway, session [2026-10-16_03](prompts/2026-10-16_03_gateway.md)
+
+**Prompt 1**
+> 'c:\Users\pc\Desktop\Idea - Peaje IA con Open Payments.pdf' 'c:\Users\pc\Desktop\Peaje IA - Proyecto.md' Estoy desarrollando esta herramienta con otro programador, estoy trabajando en una rama separada llamada proxyFlupay, soy el encargado de la parte del proxy, debo desarrollarlo completamente de forma independiente para después integrarlo a todo lo demás para no tener conflictos. ¿Cómo empiezo? Guíame en todo el proceso y explícame qué hace cada cosa.
+
+Result: step-by-step guide for the gateway (phases 0–9), no code.
+
+**Prompt 2**
+> ¿Cada cuánto ejecutas la disciplina de git y el almacenamiento de los prompts en AI_USAGE?
+
+Result: proposed git and AI-log cadence.
+
+**Prompt 3**
+> Pero, ¿cada cuánto haces todos esos pasos? Necesito que cada prompt que escriba lo almacenes en AI_USAGE.md y que cada vez que completes una fase del proceso que planificaste arriba, subas el commit. Necesito traer los cambios de mi compañero permanentemente.
+
+Result: rules applied from now on: merge `origin/main` and log the prompt on every prompt; one commit + push per verified phase.
