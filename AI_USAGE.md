@@ -46,3 +46,8 @@ Result: proposed git and AI-log cadence.
 > Pero, ¿cada cuánto haces todos esos pasos? Necesito que cada prompt que escriba lo almacenes en AI_USAGE.md y que cada vez que completes una fase del proceso que planificaste arriba, subas el commit. Necesito traer los cambios de mi compañero permanentemente.
 
 Result: rules applied from now on: merge `origin/main` and log the prompt on every prompt; one commit + push per verified phase.
+
+**Prompt 4**
+> Sí, arranca la fase 0 y la fase 1, ya confirmé que demo-api me corresponde a mí.
+
+Result: phase 0 done (pnpm 10.34.7 installed per user with npm because `corepack enable` needs admin on Windows; `pnpm install` and `pnpm typecheck` pass, lockfile unchanged). Phase 1 in progress.
