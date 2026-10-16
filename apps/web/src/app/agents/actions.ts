@@ -6,7 +6,7 @@ import { z } from "zod";
 import { normalizeWalletAddress } from "@flupay/shared";
 import { agentWallet } from "@/lib/agent-wallet";
 import { ApiError } from "@/lib/errors";
-import { createOwner, ownedAgent } from "@/lib/owners";
+import { createOwner, ownedAgent, rotateOwnerKey } from "@/lib/owners";
 import { clearSecret, requireOwner, startSession, stashSecret } from "@/lib/session";
 import type { FormState } from "@/app/actions";
 
@@ -91,7 +91,13 @@ export async function rotateMcpKeyAction(form: FormData): Promise<void> {
   await ownedAgent(owner, agentId);
   const { mcp_api_key } = await agentWallet.rotateKey(agentId);
   await stashSecret("mcpKey", `${agentId}:${mcp_api_key}`);
-  revalidatePath(`/agents/${agentId}`);
+  revalidatePath("/agents", "layout");
+}
+
+export async function rotateOwnerKeyAction(): Promise<void> {
+  const owner = await requireOwner();
+  await stashSecret("ownerKey", await rotateOwnerKey(owner.id));
+  revalidatePath("/agents", "layout");
 }
 
 export async function dismissOwnerSecrets(): Promise<void> {

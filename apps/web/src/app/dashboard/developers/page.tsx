@@ -1,4 +1,3 @@
-import { regenerateApiKey } from "@/app/actions";
 import { CopyButton } from "@/components/copy-button";
 import { NewKeyBanner } from "@/components/new-key-banner";
 import { Card, PageHeader } from "@/components/ui";
@@ -58,15 +57,8 @@ app.post("/checkout", async (req, res) => {
 
   return (
     <>
-      <PageHeader title="Desarrolladores" description="API key, endpoints para agentes y la API de cobros." />
+      <PageHeader title="Desarrolladores" description="Endpoints para agentes y la API de cobros. Tu clave está en API keys." />
       {newKey && <NewKeyBanner apiKey={newKey} />}
-
-      <Card title="API key secreta" action={<form action={regenerateApiKey}><button className="text-xs font-medium text-muted hover:text-ink">Regenerar</button></form>}>
-        <div className="flex items-center gap-3">
-          <code className="rounded-lg bg-bg px-3 py-2 font-mono text-sm">sk_••••••••••••••••{merchant.apiKeyLast4}</code>
-          <p className="text-sm text-muted">Envíala como <code className="font-mono">Authorization: Bearer sk_…</code>. Al regenerarla, la anterior deja de funcionar.</p>
-        </div>
-      </Card>
 
       <Card title="Tienda para agentes (sin código)">
         <div className="space-y-2">

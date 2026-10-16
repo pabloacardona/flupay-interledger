@@ -31,3 +31,10 @@ export async function ownedAgent(owner: AgentOwner, agentId: string): Promise<Wa
   if (!agent || agent.owner_id !== owner.walletOwnerId) throw new ApiError(ApiErrorCode.NOT_FOUND, "Agent not found", 404);
   return agent;
 }
+
+/** Issues a new account key (ok_...); the old one stops working. */
+export async function rotateOwnerKey(ownerId: string): Promise<string> {
+  const ownerKey = `ok_${randomToken(24)}`;
+  await db.agentOwner.update({ where: { id: ownerId }, data: { apiKeyHash: sha256(ownerKey), apiKeyLast4: ownerKey.slice(-4) } });
+  return ownerKey;
+}
