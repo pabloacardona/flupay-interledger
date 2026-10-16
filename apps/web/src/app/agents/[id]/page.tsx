@@ -48,13 +48,8 @@ export default async function AgentDetail({ params, searchParams }: PageProps<"/
     readSecret("mcpKey"),
   ]);
   const freshKey = mcpSecret?.startsWith(`${id}:`) ? mcpSecret.slice(id.length + 1) : null;
-  const key = freshKey ?? "fpk_…";
-  const claudeCode = `claude mcp add --transport http flupay ${env.AGENT_WALLET_MCP_URL} --header "x-agent-key: ${key}"`;
-  const desktop = JSON.stringify(
-    { mcpServers: { flupay: { command: "npx", args: ["-y", "mcp-remote", env.AGENT_WALLET_MCP_URL, "--header", `x-agent-key:${key}`] } } },
-    null,
-    2,
-  );
+  const connectorUrl = freshKey ? `${env.AGENT_WALLET_MCP_URL}/${freshKey}` : null;
+  const claudeCode = `claude mcp add --transport http flupay ${connectorUrl ?? `${env.AGENT_WALLET_MCP_URL}/fpk_…`}`;
 
   return (
     <>
@@ -66,11 +61,11 @@ export default async function AgentDetail({ params, searchParams }: PageProps<"/
       {(grant === "rejected" || grant === "error") && (
         <p className="rounded-xl border border-bad/30 bg-[#fdecea] p-4 text-sm text-bad">No se aprobó el tope. Puedes intentarlo de nuevo.</p>
       )}
-      {freshKey && (
+      {connectorUrl && (
         <SecretBanner
-          title="Clave MCP del agente"
-          note="Cópiala ahora: solo se muestra una vez. Con ella el agente se conecta a su wallet y puede pagar."
-          value={freshKey}
+          title="URL del conector MCP"
+          note="Cópiala ahora: solo se muestra una vez. Pégala en Claude como conector personalizado y el agente podrá pagar con su wallet. Lleva la clave del agente adentro: no la compartas."
+          value={connectorUrl}
         />
       )}
 
@@ -101,17 +96,29 @@ export default async function AgentDetail({ params, searchParams }: PageProps<"/
             </form>
           }
         >
-          <p className="text-sm text-muted">Claude Code:</p>
+          {connectorUrl ? (
+            <>
+              <p className="text-sm font-medium">URL del conector</p>
+              <div className="mt-2 flex items-start gap-2">
+                <code className="min-w-0 flex-1 overflow-x-auto whitespace-pre rounded-lg border border-brand/40 bg-brand-soft px-3 py-2 font-mono text-xs">{connectorUrl}</code>
+                <CopyButton value={connectorUrl} />
+              </div>
+            </>
+          ) : (
+            <div className="rounded-lg border border-dashed border-line p-4 text-sm text-muted">
+              La URL del conector se muestra una sola vez, al crear el agente o al generar una clave nueva. Si no la tienes, presiona <span className="font-medium text-ink">Nueva clave</span>.
+            </div>
+          )}
+          <ol className="mt-4 list-decimal space-y-1 pl-5 text-sm text-muted">
+            <li>En Claude (web o Desktop): <span className="text-ink">Configuración → Conectores → Agregar conector personalizado</span>.</li>
+            <li>Nombre: <span className="font-mono text-ink">FluPay</span>. URL: pega la URL del conector.</li>
+            <li>Pídele a Claude que compre algo: usará <span className="font-mono text-ink">paid_fetch</span> y pagará dentro del tope.</li>
+          </ol>
+          <p className="mt-4 text-sm text-muted">Claude Code:</p>
           <div className="mt-2 flex items-start gap-2">
             <code className="min-w-0 flex-1 overflow-x-auto whitespace-pre rounded-lg bg-bg px-3 py-2 font-mono text-xs">{claudeCode}</code>
             <CopyButton value={claudeCode} />
           </div>
-          <p className="mt-4 text-sm text-muted">Claude Desktop (claude_desktop_config.json):</p>
-          <div className="mt-2 flex items-start gap-2">
-            <pre className="min-w-0 flex-1 overflow-x-auto rounded-lg bg-bg px-3 py-2 font-mono text-xs">{desktop}</pre>
-            <CopyButton value={desktop} />
-          </div>
-          {!freshKey && <p className="mt-3 text-xs text-muted">Reemplaza fpk_… por la clave del agente. Si la perdiste, genera una nueva.</p>}
         </Card>
       </div>
 

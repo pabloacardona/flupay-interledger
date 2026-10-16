@@ -32,6 +32,10 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 
 > Súbelo a prod.
 
+## Prompt 8
+
+> Mira, ahora mismo se está generando solo la API key, y debe generar el https con la ruta del MCP pero con la clave, que sea solo copiar y pegar en mis conectores en Claude, por ejemplo.
+
 ## Decisions (answered in a multiple-choice question)
 
 - What the agent buys: **products (checkout)**.
@@ -49,3 +53,4 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 - UI copy in Spanish.
 - Agent-owner side in the same dashboard: sign-up choice "Soy un negocio / Tengo un agente", owner key (ok_...) as login, "Mis agentes" (register agent, per-purchase max), agent detail (approve cap in the wallet, revoke, MCP key shown once + rotation, Claude Code / Desktop config, live activity, payments).
 - Agent wallet REST API now requires an admin key (server-to-server from the dashboard); new `POST /owners`, `GET /agents?owner_id=`, `POST /agents/:id/key`; grant callback returns to `/agents/:id`.
+- MCP connector URL with the key in the path (`https://mcp.useflupay.space/mcp/<key>`), shown once in the agent page with steps for Claude custom connectors.

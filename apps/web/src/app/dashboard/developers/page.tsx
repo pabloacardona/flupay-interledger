@@ -114,7 +114,7 @@ app.post("/checkout", async (req, res) => {
         <p className="mb-3 text-sm text-muted">
           Los agentes pagan con la wallet MCP de FluPay: <code className="font-mono">paid_fetch</code> maneja el 402, paga dentro del tope del dueño y reintenta con la prueba de pago.
         </p>
-        <Code>{`claude mcp add --transport http flupay https://mcp.useflupay.space/mcp --header "x-agent-key: fpk_..."`}</Code>
+        <Code>{`https://mcp.useflupay.space/mcp/fpk_...   ← URL del conector (Claude → Conectores → Agregar conector personalizado)`}</Code>
       </Card>
     </>
   );

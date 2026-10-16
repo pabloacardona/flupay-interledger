@@ -44,7 +44,7 @@ curl -s -X DELETE localhost:4000/agents/<id>/grants
 
 ## MCP server
 
-Streamable HTTP at `POST /mcp`, stateless, authenticated with the `x-agent-key` header.
+Streamable HTTP, stateless. Authenticate with the `x-agent-key` header at `POST /mcp`, or put the key in the path, `POST /mcp/<key>`, for clients that only take a URL (Claude custom connectors). The URL is a secret: it carries the agent key.
 
 | Tool | Input | Output |
 | --- | --- | --- |

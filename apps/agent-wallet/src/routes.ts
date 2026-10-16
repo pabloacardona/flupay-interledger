@@ -43,7 +43,7 @@ function isAdmin(req: FastifyRequest): boolean {
 export function registerRoutes(app: FastifyInstance): void {
   app.addHook("onRequest", async (req, reply) => {
     const path = req.url.split("?")[0] ?? "";
-    if (PUBLIC_ROUTES.has(path) || req.method === "OPTIONS") return;
+    if (PUBLIC_ROUTES.has(path) || path.startsWith("/mcp/") || req.method === "OPTIONS") return;
     if (!isAdmin(req)) return reply.code(401).send({ error: "UNAUTHORIZED", message: "Admin key required" });
   });
 
