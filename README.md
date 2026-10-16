@@ -9,9 +9,9 @@ Built for the Open Payments Hackathon, Medellín, October 16–17, 2026.
 | Component | Side | What it does |
 | --- | --- | --- |
 | `apps/gateway` | Seller | Reverse proxy in front of an API. On a priced route it answers 402 with an incoming payment; when proof of payment arrives, it verifies it and forwards the request. |
-| `apps/agent-wallet` | Buyer | REST API + MCP server with `paid_fetch`, `pay` and `get_balance`. Pays using the owner's grant, which has a monthly cap. |
+| `apps/agent-wallet` | Buyer | REST API + MCP server (mcp.useflupay.space) with `paid_fetch`, `pay` and `get_balance`. Pays using the owner's grant, which has a monthly cap. |
 | `apps/demo-api` | Seller | Sample API behind the gateway. Knows nothing about payments. |
-| `apps/web` | Both | Dashboard: site revenue, agent spending, live demo console. |
+| `apps/web` | Seller | Merchant platform at useflupay.space: portal, charges API (`/api/v1`), hosted agent checkout. |
 | `packages/shared` | Both | Open Payments client, 402 protocol contract (zod), money and crypto helpers. |
 
 ## 402 protocol

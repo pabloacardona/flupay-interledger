@@ -28,6 +28,10 @@
       "better-sqlite3",
       "esbuild",
       "prisma"
+    ],
+    "ignoredBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
     ]
   }
 }
