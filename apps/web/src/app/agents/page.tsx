@@ -17,8 +17,8 @@ export default async function Agents() {
       <PageHeader title="Mis agentes" description="Registra tus agentes, aprueba cuánto pueden gastar y conéctalos por MCP." />
       {ownerKey && (
         <SecretBanner
-          title="Tu clave de acceso"
-          note="Cópiala ahora. Solo se muestra una vez y es con la que inicias sesión."
+          title="Tu clave de acceso al dashboard"
+          note="Cópiala ahora: solo se muestra una vez y es con la que inicias sesión aquí. No es la del conector de Claude: esa (fpk_…) aparece al registrar cada agente."
           value={ownerKey}
         />
       )}

@@ -113,10 +113,16 @@ function buildServer(agent: Agent): McpServer {
  * clients that only accept a URL, like Claude's custom connectors.
  */
 export function registerMcp(app: FastifyInstance): void {
-  const handle = async (req: FastifyRequest, reply: FastifyReply, key: unknown) => {
-    const agent = typeof key === "string" && key.length > 0 ? await findAgentByApiKey(key) : null;
+  const handle = async (req: FastifyRequest, reply: FastifyReply, key: unknown, fromPath: boolean) => {
+    const agent = typeof key === "string" && key.startsWith("fpk_") ? await findAgentByApiKey(key) : null;
     if (!agent) {
-      return reply.code(401).send({ jsonrpc: "2.0", error: { code: -32001, message: "Invalid or missing agent key" }, id: null });
+      const message =
+        typeof key === "string" && /^(ok|sk)_/.test(key)
+          ? "This is an account key (ok_/sk_), not an agent key. Use the connector URL with the agent key (fpk_...) from the agent page."
+          : "Invalid or missing agent key";
+      // A key in the URL makes it a capability URL: answer 404, not 401, so MCP clients
+      // (e.g. Claude connectors) do not start an OAuth flow this server does not offer.
+      return reply.code(fromPath ? 404 : 401).send({ jsonrpc: "2.0", error: { code: -32001, message }, id: null });
     }
 
     const server = buildServer(agent);
@@ -130,8 +136,8 @@ export function registerMcp(app: FastifyInstance): void {
     await transport.handleRequest(req.raw, reply.raw, req.body);
   };
 
-  app.post("/mcp", (req, reply) => handle(req, reply, req.headers["x-agent-key"]));
-  app.post<{ Params: { key: string } }>("/mcp/:key", (req, reply) => handle(req, reply, req.params.key));
+  app.post("/mcp", (req, reply) => handle(req, reply, req.headers["x-agent-key"], false));
+  app.post<{ Params: { key: string } }>("/mcp/:key", (req, reply) => handle(req, reply, req.params.key, true));
 
   const methodNotAllowed = { jsonrpc: "2.0", error: { code: -32000, message: "Method not allowed (stateless server)" }, id: null };
   for (const path of ["/mcp", "/mcp/:key"]) {
