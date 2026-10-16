@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { formatAmount } from "@flupay/shared";
+import { formatAmount, normalizeWalletAddress } from "@flupay/shared";
 import { db } from "./db.js";
 import { env, opCredentials } from "./env.js";
 import { WalletError } from "./errors.js";
@@ -33,9 +33,9 @@ export function registerRoutes(app: FastifyInstance): void {
     const body = z
       .object({
         name: z.string().min(1),
-        wallet_address: z.url(),
+        wallet_address: z.string().transform(normalizeWalletAddress).pipe(z.url()),
         max_price: decimal,
-        allowed_merchants: z.array(z.url()).default([]),
+        allowed_merchants: z.array(z.string().transform(normalizeWalletAddress).pipe(z.url())).default([]),
         owner_name: z.string().min(1).default("Demo owner"),
         owner_email: z.email().optional(),
       })
