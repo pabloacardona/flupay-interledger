@@ -1,10 +1,18 @@
-# Per-route pricing. First matching pattern wins.
+# Gateway configuration. Secrets (the FluPay API key) live in .env, never here.
+
+# Backend the gateway protects. It knows nothing about payments.
 upstream: http://localhost:3000
-wallet: https://ilp.interledger-test.dev/<site>
+
+# Who pays on priced routes: "agents" (people in a browser stay free) or "everyone".
+charge: agents
+
+# Per-route pricing. Patterns are exact paths or prefixes ending in /*.
+# First matching pattern wins, so list the most specific routes first.
+# Prices use the currency of the merchant wallet linked to the FluPay API key.
 routes:
   - path: /api/premium/*
-    price: 0.05 USD
+    price: 200 COP
   - path: /api/*
-    price: 0.01 USD
+    price: 50 COP
   - path: /*
     price: free
