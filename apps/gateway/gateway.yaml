@@ -3,6 +3,9 @@
 # Backend the gateway protects. It knows nothing about payments.
 upstream: http://localhost:3000
 
+# Who pays on priced routes: "agents" (people in a browser stay free) or "everyone".
+charge: agents
+
 # Per-route pricing. Patterns are exact paths or prefixes ending in /*.
 # First matching pattern wins, so list the most specific routes first.
 # Prices use the currency of the merchant wallet linked to the FluPay API key.

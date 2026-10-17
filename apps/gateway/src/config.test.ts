@@ -22,6 +22,12 @@ test("loads the shipped gateway.yaml", () => {
   assert.equal(config.routes.at(-1)?.price, null);
 });
 
+test("an empty GATEWAY_ADMIN_KEY (copied .env.example) disables stats", () => {
+  const config = withYaml("upstream: http://x\nroutes:\n  - path: /a\n    price: free\n", { GATEWAY_ADMIN_KEY: "" });
+  assert.equal(config.adminKey, null);
+  assert.equal(config.charge, "agents");
+});
+
 test("parses prices into amount and currency", () => {
   const config = withYaml("upstream: http://localhost:3000\nroutes:\n  - path: /a\n    price: 0.05 USD\n");
   assert.deepEqual(config.routes[0]?.price, { amount: "0.05", currency: "USD" });

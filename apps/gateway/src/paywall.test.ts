@@ -69,6 +69,7 @@ class FakeFlupay implements ChargesApi {
 let upstream: FastifyInstance;
 let gateway: FastifyInstance;
 let flupay: FakeFlupay;
+let upstreamUrl: string;
 
 before(async () => {
   // Upstream that echoes what it received, to check what the gateway forwards.
@@ -76,7 +77,8 @@ before(async () => {
   upstream.get("/*", async (req) => ({ path: req.url, authorization: req.headers.authorization ?? null }));
   const address = await upstream.listen({ port: 0, host: "127.0.0.1" });
   flupay = new FakeFlupay();
-  gateway = await buildApp({ upstream: address, routes }, flupay, { logger: false });
+  upstreamUrl = address;
+  gateway = await buildApp({ upstream: address, routes, adminKey: "admin-key-0123456789" }, flupay, { logger: false });
 });
 
 after(async () => {
@@ -170,4 +172,41 @@ test("FluPay down answers 502", async () => {
   const res = await gateway.inject({ url: "/api/weather" });
   assert.equal(res.statusCode, 502);
   assert.equal(res.json().error, "payment_provider_unavailable");
+});
+
+const browser = {
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36",
+  "accept-language": "es-CO,es;q=0.9",
+};
+
+test("people in a browser use priced routes for free with charge: agents", async () => {
+  const res = await gateway.inject({ url: "/api/premium/report", headers: browser });
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.headers["x-flupay-visitor"], "human");
+  assert.equal(flupay.calls.create.length, 0);
+});
+
+test("with charge: everyone, browsers pay too", async () => {
+  const everyone = await buildApp({ upstream: upstreamUrl, routes, charge: "everyone" }, flupay, { logger: false });
+  const res = await everyone.inject({ url: "/api/weather", headers: browser });
+  assert.equal(res.statusCode, 402);
+  await everyone.close();
+});
+
+test("unidentified agents get the detection signal as agent hint", async () => {
+  const res = await gateway.inject({ url: "/api/weather", headers: { "user-agent": "curl/8.9.1" } });
+  assert.equal(res.statusCode, 402);
+  assert.equal(res.headers["x-flupay-visitor"], "agent");
+  assert.equal(flupay.calls.create[0]?.agentHint, "http-client");
+});
+
+test("stats need the admin key and count revenue", async () => {
+  const proof = await paidProof("/api/premium/report");
+  await gateway.inject({ url: "/api/premium/report", headers: { authorization: proof } });
+
+  assert.equal((await gateway.inject({ url: "/_gateway/stats" })).statusCode, 401);
+  const res = await gateway.inject({ url: "/_gateway/stats", headers: { authorization: "Bearer admin-key-0123456789" } });
+  assert.equal(res.statusCode, 200);
+  assert.ok(res.json().paid >= 1);
+  assert.match(res.json().revenue.COP, /^\d+\.\d{2}$/);
 });

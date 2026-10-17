@@ -12,6 +12,8 @@ const envSchema = z.object({
   GATEWAY_FLUPAY_URL: z.url().default("https://useflupay.space"),
   /** Merchant secret key (`sk_...`) from the FluPay dashboard, API keys section. */
   GATEWAY_FLUPAY_API_KEY: z.string().startsWith("sk_", "GATEWAY_FLUPAY_API_KEY must be a merchant key (sk_...)"),
+  /** Protects GET /_gateway/stats. When unset, the endpoint is disabled. */
+  GATEWAY_ADMIN_KEY: z.preprocess((v) => (v === "" ? undefined : v), z.string().min(16).optional()),
 });
 
 /** "free", or a positive decimal amount plus an ISO 4217 code, e.g. "0.05 USD". */
@@ -35,17 +37,22 @@ const routeSchema = z.object({
 
 const fileSchema = z.object({
   upstream: z.url(),
+  /** "agents": people in a browser use priced routes for free. "everyone": every visitor pays. */
+  charge: z.enum(["agents", "everyone"]).default("agents"),
   routes: z.array(routeSchema).min(1),
 });
 
 export type Price = { amount: string; currency: string };
 export type RouteRule = { path: string; price: Price | null };
+export type ChargeMode = "agents" | "everyone";
 
 export interface GatewayConfig {
   port: number;
   upstream: string;
   flupayUrl: string;
   flupayApiKey: string;
+  adminKey: string | null;
+  charge: ChargeMode;
   routes: RouteRule[];
 }
 
@@ -57,6 +64,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): GatewayConfig 
     upstream: file.upstream,
     flupayUrl: vars.GATEWAY_FLUPAY_URL,
     flupayApiKey: vars.GATEWAY_FLUPAY_API_KEY,
+    adminKey: vars.GATEWAY_ADMIN_KEY ?? null,
+    charge: file.charge,
     routes: file.routes,
   };
 }

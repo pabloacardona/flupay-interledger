@@ -29,7 +29,7 @@ This project follows the [Interledger Hackathon AI policy](https://interledger.o
 | `packages/shared/src/*` (`protocol402.ts`, `money.ts`, `crypto.ts`, `op-client.ts`, `wallet-address.ts`) | 02, 03 | 402 contract (zod), minor-unit money, AES-256-GCM, OP client factory, payment pointers | _pending_ |
 | `apps/agent-wallet/**` (Prisma schema and migrations, grants, payments, REST routes, MCP server) | 02, 03, 05 | Full implementation, checked against the installed SDK type definitions | _pending_ |
 | `apps/web/**` (Prisma schema and migrations, charges API, hosted checkout, merchant and owner dashboards) | 04, 05 | Full implementation; scaffold from `create-next-app` | _pending_ |
-| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API | _pending_ |
+| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `detect.ts`, `stats.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API, agent detection, stats | _pending_ |
 | `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | 06 | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | _pending_ |
 
 ## Files with little or no AI involvement
@@ -88,3 +88,18 @@ Result: re-read the project after the teammate's merge. New approach: the gatewa
 (Answer to: start the paywall phase, 402 through `/api/v1/charges` and proof verification through `/api/v1/charges/verify`, testing against a fake charges API until the merchant key exists.)
 
 Result: paywall phase done. Priced routes answer 402 with the `Payment-Required` header from `POST /api/v1/charges`; proofs go to `POST /api/v1/charges/verify` and must match the route pattern, currency and price; proof never forwarded upstream; `Payment-Receipt` on success; 502 when FluPay fails. 18 tests with a fake charges API; smoke test against useflupay.space with an invalid key gives 502 (FluPay 401) as expected. Not yet tested with a real merchant key.
+
+**Prompt 9**
+> ¿De dónde extraigo ese sk?
+
+Result: explained how to get a merchant `sk_` key from the FluPay dashboard (sign up as a business with a COP test wallet address; the key is shown once, "Regenerar" in API keys issues a new one). No code changes.
+
+**Prompt 10**
+> El botón regenerar no funciona, pero recuerda que solo me corresponde hacer el gateway y el demo-api, ¿puedo arreglarlo sin problema?
+
+Result: advice only: `apps/web` belongs to the teammate, so report the bug to them instead of fixing it on `proxyFlupay`; workaround is a new merchant sign-up. No code changes.
+
+**Prompt 11**
+> Continúa el resto de las fases y después concluyes qué falta. Tenemos solamente 3 horas para terminar todo el proyecto.
+
+Result: _in progress_

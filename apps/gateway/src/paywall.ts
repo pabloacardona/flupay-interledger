@@ -2,6 +2,7 @@
 // carries a valid proof of payment.
 //
 //   free route                      -> pass
+//   person in a browser             -> pass (when gateway.yaml says `charge: agents`)
 //   priced route, no proof          -> create charge, answer 402 + Payment-Required
 //   priced route, valid proof       -> consume charge, pass with Payment-Receipt
 //   priced route, invalid proof     -> fresh 402 (with the reason)
@@ -13,12 +14,17 @@ import {
   toMinor,
 } from "@flupay/shared";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { Price, RouteRule } from "./config.js";
+import type { ChargeMode, Price, RouteRule } from "./config.js";
+import { detectVisitor } from "./detect.js";
 import { FlupayError, type Charge, type ChargesApi } from "./flupay.js";
 import { priceFor } from "./pricing.js";
+import { GatewayStats } from "./stats.js";
 
 /** Gateway's own endpoints are never charged. */
 export const GATEWAY_PREFIX = "/_gateway/";
+
+/** Tells the client how the gateway classified it: "agent" or "human". */
+export const VISITOR_HEADER = "x-flupay-visitor";
 
 /**
  * A proof only unlocks the route it was issued for: same route pattern (stored as the
@@ -33,11 +39,33 @@ export function chargeCovers(charge: Charge, rule: RouteRule, price: Price): boo
   }
 }
 
-export function createPaywall(routes: RouteRule[], flupay: ChargesApi) {
+export interface PaywallOptions {
+  routes: RouteRule[];
+  flupay: ChargesApi;
+  charge?: ChargeMode;
+  stats?: GatewayStats;
+}
+
+export function createPaywall({ routes, flupay, charge: mode = "agents", stats = new GatewayStats() }: PaywallOptions) {
   return async function paywall(req: FastifyRequest, reply: FastifyReply) {
     if (req.url.startsWith(GATEWAY_PREFIX)) return;
+    stats.requests++;
     const { rule, price } = priceFor(routes, req.url);
-    if (!rule || !price) return; // free
+    if (!rule || !price) {
+      stats.free++;
+      return;
+    }
+
+    const visitor = detectVisitor(req.headers);
+    reply.header(VISITOR_HEADER, visitor.agent ? "agent" : "human");
+    if (!visitor.agent) {
+      if (mode === "agents") {
+        stats.humans++;
+        return;
+      }
+    } else {
+      stats.agent(visitor.reason);
+    }
 
     try {
       let rejected: string | null = null;
@@ -48,10 +76,13 @@ export function createPaywall(routes: RouteRule[], flupay: ChargesApi) {
           // The upstream does not understand our proof; never forward it.
           delete req.headers.authorization;
           reply.header(PAYMENT_RECEIPT_HEADER, result.charge.incoming_url);
+          stats.paid++;
+          stats.addRevenue(result.charge.amount, result.charge.asset_code, result.charge.asset_scale);
           req.log.info({ charge: result.charge.id, route: rule.path }, "paid request");
           return;
         }
         rejected = result.valid ? "wrong_route_or_price" : result.reason;
+        stats.reject(rejected);
         req.log.warn({ route: rule.path, reason: rejected }, "payment proof rejected");
       }
 
@@ -60,13 +91,14 @@ export function createPaywall(routes: RouteRule[], flupay: ChargesApi) {
         amount: price.amount,
         description: `${req.method} ${req.url.split("?")[0]}`.slice(0, 200),
         reference: rule.path,
-        agentHint: typeof agentHint === "string" ? agentHint.slice(0, 100) : undefined,
+        agentHint: (typeof agentHint === "string" ? agentHint : visitor.reason).slice(0, 100),
       });
       if (charge.asset_code !== price.currency) {
         req.log.error({ configured: price.currency, merchant: charge.asset_code }, "gateway.yaml currency differs from the merchant wallet");
         return reply.code(500).send({ error: "gateway_misconfigured", message: "Route currency does not match the merchant wallet" });
       }
 
+      stats.paymentRequired++;
       return reply
         .code(402)
         .header(PAYMENT_REQUIRED_HEADER, charge.payment_required)
