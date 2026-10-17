@@ -12,6 +12,7 @@ Built for the Open Payments Hackathon, Medellín, October 16–17, 2026. Runs on
 | --- | --- |
 | Dashboard (merchants and agent owners) + charges API | https://useflupay.space |
 | Agent wallet MCP server | https://mcp.useflupay.space/mcp/&lt;agent key&gt; |
+| Demo store (Café Andino) | https://tienda.useflupay.space |
 
 ## How it works
 
@@ -24,6 +25,7 @@ Built for the Open Payments Hackathon, Medellín, October 16–17, 2026. Runs on
 | `apps/web` | Seller + owners | Dashboard (Spanish UI), charges API (`/api/v1`), hosted agent checkout, agent-owner pages. Next.js 16, Neon Postgres. |
 | `apps/agent-wallet` | Buyer | MCP server (`paid_fetch`, `pay`, `get_balance`) and owner REST API: capped grants, quotes, outgoing payments, typed errors. Fastify, Neon Postgres. |
 | `packages/shared` | Both | 402 contract (zod), money in minor units, AES-256-GCM, Open Payments client. |
+| `apps/store` | Seller | Demo store "Café Andino": storefront for people, agent catalog, 402 checkout and `llms.txt`, integrated with the charges API. |
 | `apps/gateway` | Seller | Reverse proxy that charges per route and detects agents (built by teammates). |
 | `apps/demo-api` | Seller | Sample API behind the gateway. |
 
@@ -41,7 +43,7 @@ Authorization: OpenPayments <incoming payment url>
 
 ## Deployments
 
-Every push to `main` deploys to Vercel through [GitHub Actions](.github/workflows/deploy.yml): `apps/agent-wallet` → mcp.useflupay.space and `apps/web` → useflupay.space, only when their files (or `packages/shared`) change. Run it by hand from the Actions tab (*Deploy to Vercel → Run workflow*). It needs one repository secret, `VERCEL_TOKEN`.
+Every push to `main` deploys to Vercel through [GitHub Actions](.github/workflows/deploy.yml): `apps/agent-wallet` → mcp.useflupay.space and `apps/web` → useflupay.space and `apps/store` → tienda.useflupay.space, only when their files (or `packages/shared`) change. Run it by hand from the Actions tab (*Deploy to Vercel → Run workflow*). It needs one repository secret, `VERCEL_TOKEN`.
 
 ## Run locally
 

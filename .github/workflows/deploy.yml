@@ -22,6 +22,7 @@ jobs:
     outputs:
       agent_wallet: ${{ steps.filter.outputs.agent_wallet }}
       web: ${{ steps.filter.outputs.web }}
+      store: ${{ steps.filter.outputs.store }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -40,6 +41,9 @@ jobs:
             web:
               - *shared
               - "apps/web/**"
+            store:
+              - *shared
+              - "apps/store/**"
 
   agent-wallet:
     name: Deploy mcp.useflupay.space
@@ -60,6 +64,17 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERCEL_PROJECT_ID: prj_r5bzgx7OjybczhGbGn4f8CETjE80
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx --yes vercel@latest deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
+
+  store:
+    name: Deploy tienda.useflupay.space
+    needs: changes
+    if: needs.changes.outputs.store == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_PROJECT_ID: prj_y3Va3smMK1A7GsPWJv8rgsxHHXP1
     steps:
       - uses: actions/checkout@v4
       - run: npx --yes vercel@latest deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
