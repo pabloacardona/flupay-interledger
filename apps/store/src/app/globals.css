@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+:root {
+  --cream: #f6efe4;
+  --paper: #fffaf2;
+  --espresso: #2b1a10;
+  --roast: #6b3f22;
+  --leaf: #2f5d3a;
+  --line: #e6d9c6;
+  --muted: #7a6a5a;
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-paper: var(--paper);
+  --color-espresso: var(--espresso);
+  --color-roast: var(--roast);
+  --color-leaf: var(--leaf);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --font-serif: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+body {
+  background: var(--cream);
+  color: var(--espresso);
+}
