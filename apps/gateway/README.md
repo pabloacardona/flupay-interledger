@@ -67,6 +67,19 @@ pnpm --filter @flupay/gateway test         # unit and integration tests (fake ch
 
 The hosted MCP wallet (`mcp.useflupay.space`) cannot reach `localhost`, so a demo with a real agent needs the tunnel URL: ask the agent to `paid_fetch` `https://<tunnel>/api/weather`.
 
+## Demo script (about 3 minutes)
+
+Before: `.env` has `GATEWAY_FLUPAY_API_KEY` and `GATEWAY_ADMIN_KEY`; the demo agent has an approved cap and its connector URL is in Claude; the merchant wallet is not the agent's wallet.
+
+1. Start `pnpm dev:demo-api`, `pnpm dev:gateway` and `pnpm --filter @flupay/gateway tunnel`. Copy the `https://….trycloudflare.com` URL.
+2. **A person browses free.** Open `https://<tunnel>/api/weather` in the browser: JSON data, response header `x-flupay-visitor: human`.
+3. **A script gets a bill.** `curl -i https://<tunnel>/api/weather`: `402 Payment Required` with `Payment-Required`; the pending charge shows up in the FluPay dashboard (Cobros).
+4. **The agent pays by itself.** In Claude: "Use paid_fetch on `https://<tunnel>/api/premium/report` with max_price 300." The agent gets the 402, pays 200 COP within its cap, retries and shows the report.
+5. **Proof of the money.** Dashboard: the charge is consumed. `curl -H "Authorization: Bearer $GATEWAY_ADMIN_KEY" https://<tunnel>/_gateway/stats`: `paid: 1`, `revenue: { "COP": "200.00" }`.
+6. **No replay.** Replaying the paid proof with curl (`-H "Authorization: OpenPayments <incoming url>"`, URL from the charge in the dashboard) gives `402` with `rejected: already_used`.
+
+If the tunnel URL changes, restart only the tunnel; the agent just needs the new URL.
+
 ## Files
 
 | File | Role |
