@@ -29,8 +29,8 @@ This project follows the [Interledger Hackathon AI policy](https://interledger.o
 | `packages/shared/src/*` (`protocol402.ts`, `money.ts`, `crypto.ts`, `op-client.ts`, `wallet-address.ts`) | 02, 03 | 402 contract (zod), minor-unit money, AES-256-GCM, OP client factory, payment pointers | _pending_ |
 | `apps/agent-wallet/**` (Prisma schema and migrations, grants, payments, REST routes, MCP server) | 02, 03, 05 | Full implementation, checked against the installed SDK type definitions | _pending_ |
 | `apps/web/**` (Prisma schema and migrations, charges API, hosted checkout, merchant and owner dashboards) | 04, 05 | Full implementation; scaffold from `create-next-app` | _pending_ |
-| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `detect.ts`, `stats.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`, `README.md`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API, agent detection, stats, docs, tunnel script, e2e test | _pending_ |
-| `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | 06 | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | _pending_ |
+| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `detect.ts`, `stats.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`, `README.md`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API, agent detection, stats, docs, tunnel script, e2e test | Pabloacardona |
+| `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | 06 | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | Pabloacardona |
 
 ## Files with little or no AI involvement
 
@@ -113,3 +113,43 @@ Result: hardening (`e2e.test.ts` over real HTTP, `503` instead of `502` because 
 > Wallet address not found: Error opening file ".../@interledger/open-payments/dist/openapi/specs/wallet-address-server.yaml" ENOENT: no such file or directory ... ¿Por qué me sale este error al momento de poner la wallet address?
 
 Result: merchant sign-up failed in production because `createAuthenticatedClient` reads its OpenAPI YAML specs from `node_modules` at runtime and the Vercel bundle does not ship them. Fix: `validateResponses: false` in `packages/shared/src/op-client.ts`, on its own branch `fix/op-yaml-vercel` from `main` with PR #3, so it can be merged without waiting for the gateway PR.
+
+**Prompt 14**
+> Wallet address not found: Error opening file "/var/task/node_modules/.pnpm/@interledger+open-payments@7.4.0/.../wallet-address-server.yaml" ENOENT ... Cuando ingreso el wallet address me aparece ese error, ¿por qué si ya lo corregimos con los commits que subí?
+
+Result: the fix (`validateResponses: false`, PR #3) is correct and merged in `main`, and the installed SDK skips loading the YAML specs with it, but Vercel is not connected to GitHub (no deployments or commit statuses), so production keeps the old build until someone runs a production deploy of `flupay-web` (and `flupay-agent-wallet`, which uses the same client). No code changes.
+
+**Prompt 15**
+> Ya el compañero hizo el redeploy, ahora ¿cómo continuamos con los pendientes?
+
+Result: merged `main` (partner's GitHub Actions deploy workflow, runs green), confirmed the production charges API answers `401` without a key, created a local ignored `.env` with the gateway variables and a generated `GATEWAY_ADMIN_KEY` (the `sk_` stays empty for the user to paste locally). Next: merchant sign-up, `sk_` in `.env`, real `402`, then a paid request through the tunnel.
+
+**Prompt 16**
+> listo
+
+Result: the `sk_` key was not saved in the root `.env` (`GATEWAY_FLUPAY_API_KEY=` still empty, no key found in other repo files). Asked the user to save the file and confirm again. No code changes.
+
+**Prompt 17**
+> Ya puse la sk
+
+Result: started `demo-api` and the gateway with the real key. First merchant wallet was USD, so the gateway answered `500 gateway_misconfigured` (currency guard worked); the user switched to a COP merchant key (`flupaytestcop`). Real `402` with a FluPay charge for `50.00 COP`, browser passes free, same `402` through the cloudflared tunnel. Next: paid request with the agent key.
+
+**Prompt 18**
+> ¿Qué es lo que falta exactamente para que el gateway quede bien, funcional y que podamos hacer todo un flujo completo y funcional integrando Interledger y Open Payments?
+
+Result: checklist of what remains for the end-to-end flow: agent key and approved GNAP grant with COP funds, one real `paid_fetch` through the tunnel, stable public URL decision, PR of the new `proxyFlupay` commits, issue #1, reviewer names, demo rehearsal. No code changes.
+
+**Prompt 19**
+> Listo. Verifica todo el flujo completo.
+
+Result: agent key read from `.env` by a local MCP client script (never printed). Gateway, tunnel and hosted MCP answer, but `paid_fetch` returns `GRANT_INACTIVE`: the agent has no approved spending cap (GNAP interactive grant). Asked the user to approve it from the agent page in the dashboard ("Tope de gasto").
+
+**Prompt 20**
+> Listo, ya aprobé el tope
+
+Result: full end-to-end flow verified against production (FluPay web, hosted agent-wallet MCP, Interledger testnet) through the cloudflared tunnel. `paid_fetch` paid `/api/weather` (50.00 COP) and `/api/premium/report` (200.00 COP), both `200`. Manual `pay` + proof gave `200` with `Payment-Receipt`; reusing it gave `402 already_used`; a weather proof on the premium route gave `wrong_route_or_price`; an unpaid proof gave `not_paid`; `max_price` below the price gave `PRICE_EXCEEDS_MAX` with nothing charged. Gateway stats: 3 paid, 300.00 COP revenue; agent spent 350.00 COP (the cross-route charge is consumed but rejected). No code changes.
+
+**Prompt 21**
+> Sí, abre el PR y cambia el pending por Pabloacardona.
+
+Result: set the reviewer of the gateway and demo-api rows to Pabloacardona (the other rows belong to the partner's code and stay pending for them). The working copy had been switched to `main` outside this session; the edit was reverted there, `proxyFlupay` merged the new `main` (Café Andino store) without conflicts, tests pass, and PR `proxyFlupay` → `main` opened.
