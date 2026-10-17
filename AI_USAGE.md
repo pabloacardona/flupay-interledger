@@ -113,3 +113,8 @@ Result: hardening (`e2e.test.ts` over real HTTP, `503` instead of `502` because 
 > Wallet address not found: Error opening file ".../@interledger/open-payments/dist/openapi/specs/wallet-address-server.yaml" ENOENT: no such file or directory ... ¿Por qué me sale este error al momento de poner la wallet address?
 
 Result: merchant sign-up failed in production because `createAuthenticatedClient` reads its OpenAPI YAML specs from `node_modules` at runtime and the Vercel bundle does not ship them. Fix: `validateResponses: false` in `packages/shared/src/op-client.ts`, on its own branch `fix/op-yaml-vercel` from `main` with PR #3, so it can be merged without waiting for the gateway PR.
+
+**Prompt 14**
+> Wallet address not found: Error opening file "/var/task/node_modules/.pnpm/@interledger+open-payments@7.4.0/.../wallet-address-server.yaml" ENOENT ... Cuando ingreso el wallet address me aparece ese error, ¿por qué si ya lo corregimos con los commits que subí?
+
+Result: the fix (`validateResponses: false`, PR #3) is correct and merged in `main`, and the installed SDK skips loading the YAML specs with it, but Vercel is not connected to GitHub (no deployments or commit statuses), so production keeps the old build until someone runs a production deploy of `flupay-web` (and `flupay-agent-wallet`, which uses the same client). No code changes.
