@@ -138,3 +138,13 @@ Result: started `demo-api` and the gateway with the real key. First merchant wal
 > ¿Qué es lo que falta exactamente para que el gateway quede bien, funcional y que podamos hacer todo un flujo completo y funcional integrando Interledger y Open Payments?
 
 Result: checklist of what remains for the end-to-end flow: agent key and approved GNAP grant with COP funds, one real `paid_fetch` through the tunnel, stable public URL decision, PR of the new `proxyFlupay` commits, issue #1, reviewer names, demo rehearsal. No code changes.
+
+**Prompt 19**
+> Listo. Verifica todo el flujo completo.
+
+Result: agent key read from `.env` by a local MCP client script (never printed). Gateway, tunnel and hosted MCP answer, but `paid_fetch` returns `GRANT_INACTIVE`: the agent has no approved spending cap (GNAP interactive grant). Asked the user to approve it from the agent page in the dashboard ("Tope de gasto").
+
+**Prompt 20**
+> Listo, ya aprobé el tope
+
+Result: full end-to-end flow verified against production (FluPay web, hosted agent-wallet MCP, Interledger testnet) through the cloudflared tunnel. `paid_fetch` paid `/api/weather` (50.00 COP) and `/api/premium/report` (200.00 COP), both `200`. Manual `pay` + proof gave `200` with `Payment-Receipt`; reusing it gave `402 already_used`; a weather proof on the premium route gave `wrong_route_or_price`; an unpaid proof gave `not_paid`; `max_price` below the price gave `PRICE_EXCEEDS_MAX` with nothing charged. Gateway stats: 3 paid, 300.00 COP revenue; agent spent 350.00 COP (the cross-route charge is consumed but rejected). No code changes.
