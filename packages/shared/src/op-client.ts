@@ -14,5 +14,8 @@ export function createOpClient(config: OpClientConfig): Promise<AuthenticatedCli
     walletAddressUrl: config.walletAddressUrl,
     keyId: config.keyId,
     privateKey: config.privateKey,
+    // Skip OpenAPI response validation: it reads YAML specs from node_modules at runtime,
+    // and serverless bundles (Vercel /var/task) don't ship those files -> ENOENT.
+    validateResponses: false,
   });
 }
