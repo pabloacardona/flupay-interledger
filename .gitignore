@@ -27,3 +27,6 @@ keys/*
 # generated Prisma clients
 **/src/generated/
 .env*
+
+# demo credentials (local only)
+.demo-credentials.local.md

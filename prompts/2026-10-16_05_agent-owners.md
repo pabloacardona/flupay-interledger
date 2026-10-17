@@ -54,6 +54,12 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 
 > Listo, necesitamos una web de ejemplo que sea el negocio, como sería una demo.
 
+## Prompt 12
+
+> Perfecto, implementa las 4 [steps pasted: create products, load the key in Vercel…]. Deja todo listo para realizar la demo.
+
+(Creating the store's wallet address is left to the user: it needs a sign-in to the test wallet. Everything else is scripted.)
+
 ## Result
 
 - Sign-up as **"Soy un negocio"** or **"Tengo un agente"**. Agent owners log in with an `ok_…` key and get "Mis agentes": register an agent (wallet + max per purchase), approve the cap in the wallet, revoke, see live activity and payments.
@@ -63,3 +69,4 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 - "API keys" in the sidebar: owners generate each agent's connector URL (shown once) and rotate their account key; merchants manage their `sk_…` key.
 - `.github/workflows/deploy.yml`: on push to `main`, deploys `apps/agent-wallet` and `apps/web` to Vercel production when their files or `packages/shared` change (agent wallet first). Needs the `VERCEL_TOKEN` repository secret.
 - `apps/store`: demo merchant "Café Andino" at tienda.useflupay.space (storefront, agent catalog, 402 checkout through the charges API, `llms.txt`, live orders), added to the deploy workflow.
+- `scripts/setup-demo-store.mts` (registers Café Andino, products, sets the store key on Vercel without printing it) and `DEMO.md` (checklist, 5-minute script, prompts, troubleshooting).

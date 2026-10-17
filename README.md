@@ -56,6 +56,10 @@ pnpm dev:agent-wallet    # http://localhost:4000
 pnpm dev:web             # http://localhost:3001
 ```
 
+## Demo
+
+Script, checklist and troubleshooting: [DEMO.md](DEMO.md).
+
 ## AI usage
 
 See [AI_USAGE.md](AI_USAGE.md) and [`prompts/`](prompts), as required by the hackathon AI policy.
