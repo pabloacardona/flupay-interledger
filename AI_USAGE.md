@@ -29,8 +29,8 @@ This project follows the [Interledger Hackathon AI policy](https://interledger.o
 | `packages/shared/src/*` (`protocol402.ts`, `money.ts`, `crypto.ts`, `op-client.ts`, `wallet-address.ts`) | 02, 03 | 402 contract (zod), minor-unit money, AES-256-GCM, OP client factory, payment pointers | _pending_ |
 | `apps/agent-wallet/**` (Prisma schema and migrations, grants, payments, REST routes, MCP server) | 02, 03, 05 | Full implementation, checked against the installed SDK type definitions | _pending_ |
 | `apps/web/**` (Prisma schema and migrations, charges API, hosted checkout, merchant and owner dashboards) | 04, 05 | Full implementation; scaffold from `create-next-app` | _pending_ |
-| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `detect.ts`, `stats.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`, `README.md`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API, agent detection, stats, docs, tunnel script, e2e test | _pending_ |
-| `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | 06 | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | _pending_ |
+| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `detect.ts`, `stats.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`, `README.md`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API, agent detection, stats, docs, tunnel script, e2e test | Pabloacardona |
+| `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | 06 | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | Pabloacardona |
 
 ## Files with little or no AI involvement
 
@@ -148,3 +148,8 @@ Result: agent key read from `.env` by a local MCP client script (never printed).
 > Listo, ya aprobé el tope
 
 Result: full end-to-end flow verified against production (FluPay web, hosted agent-wallet MCP, Interledger testnet) through the cloudflared tunnel. `paid_fetch` paid `/api/weather` (50.00 COP) and `/api/premium/report` (200.00 COP), both `200`. Manual `pay` + proof gave `200` with `Payment-Receipt`; reusing it gave `402 already_used`; a weather proof on the premium route gave `wrong_route_or_price`; an unpaid proof gave `not_paid`; `max_price` below the price gave `PRICE_EXCEEDS_MAX` with nothing charged. Gateway stats: 3 paid, 300.00 COP revenue; agent spent 350.00 COP (the cross-route charge is consumed but rejected). No code changes.
+
+**Prompt 21**
+> Sí, abre el PR y cambia el pending por Pabloacardona.
+
+Result: set the reviewer of the gateway and demo-api rows to Pabloacardona (the other rows belong to the partner's code and stay pending for them). The working copy had been switched to `main` outside this session; the edit was reverted there, `proxyFlupay` merged the new `main` (Café Andino store) without conflicts, tests pass, and PR `proxyFlupay` → `main` opened.
