@@ -1,0 +1,65 @@
+# Deploys the Vercel projects on every push to main.
+# The repo lives on a personal GitHub account, so the native Vercel Git integration
+# is not available to the Vercel team that owns the projects; the CLI deploys instead.
+# Only secret needed: VERCEL_TOKEN (Settings -> Secrets and variables -> Actions).
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: vercel-production
+  cancel-in-progress: false
+
+env:
+  VERCEL_ORG_ID: team_APjryfViHh0YGZ7ydJ4WWVpc
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      agent_wallet: ${{ steps.filter.outputs.agent_wallet }}
+      web: ${{ steps.filter.outputs.web }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            shared: &shared
+              - "packages/shared/**"
+              - "pnpm-lock.yaml"
+              - "package.json"
+              - "pnpm-workspace.yaml"
+              - "tsconfig.base.json"
+            agent_wallet:
+              - *shared
+              - "apps/agent-wallet/**"
+            web:
+              - *shared
+              - "apps/web/**"
+
+  agent-wallet:
+    name: Deploy mcp.useflupay.space
+    needs: changes
+    if: needs.changes.outputs.agent_wallet == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_PROJECT_ID: prj_rgWkXROyRWy2TdZqsEhXDvTXDQ1d
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx --yes vercel@latest deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
+
+  web:
+    name: Deploy useflupay.space
+    # After the agent wallet: the dashboard calls its API.
+    needs: [changes, agent-wallet]
+    if: always() && needs.agent-wallet.result != 'failure' && (needs.changes.outputs.web == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_PROJECT_ID: prj_r5bzgx7OjybczhGbGn4f8CETjE80
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx --yes vercel@latest deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
