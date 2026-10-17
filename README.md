@@ -39,6 +39,10 @@ POST /api/stores/<store>/checkout
 Authorization: OpenPayments <incoming payment url>
 ```
 
+## Deployments
+
+Every push to `main` deploys to Vercel through [GitHub Actions](.github/workflows/deploy.yml): `apps/agent-wallet` → mcp.useflupay.space and `apps/web` → useflupay.space, only when their files (or `packages/shared`) change. Run it by hand from the Actions tab (*Deploy to Vercel → Run workflow*). It needs one repository secret, `VERCEL_TOKEN`.
+
 ## Run locally
 
 ```bash

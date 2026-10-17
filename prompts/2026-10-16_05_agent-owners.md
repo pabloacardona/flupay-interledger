@@ -32,6 +32,18 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 
 > Listo, prepara todo y haz push al repo para seguir. Arma bien los prompts y sube.
 
+## Prompt 8
+
+> Haz el pull de Vercel. → No, de GitHub.
+
+## Prompt 9
+
+> Ahora debemos anclar el GitHub a Vercel.
+
+### Decision (multiple-choice question asked by the assistant)
+
+- The repo is on a personal account where the user has push but not admin, so the native Vercel Git integration cannot be connected from the team that owns the projects. Chosen: **GitHub Actions** deploying with the Vercel CLI.
+
 ## Result
 
 - Sign-up as **"Soy un negocio"** or **"Tengo un agente"**. Agent owners log in with an `ok_…` key and get "Mis agentes": register an agent (wallet + max per purchase), approve the cap in the wallet, revoke, see live activity and payments.
@@ -39,3 +51,4 @@ _Prompts are verbatim except for spelling and punctuation fixes; content is unch
 - One-paste MCP connector URL with the agent key in the path: `https://mcp.useflupay.space/mcp/<fpk_key>`, for Claude custom connectors that only accept a URL.
 - Bug found in production logs: the connector URL held the account key (`ok_…`), the server answered 401, and Claude started an OAuth flow that does not exist. Bad keys in the URL now return 404 with a clear message.
 - "API keys" in the sidebar: owners generate each agent's connector URL (shown once) and rotate their account key; merchants manage their `sk_…` key.
+- `.github/workflows/deploy.yml`: on push to `main`, deploys `apps/agent-wallet` and `apps/web` to Vercel production when their files or `packages/shared` change (agent wallet first). Needs the `VERCEL_TOKEN` repository secret.
