@@ -123,3 +123,18 @@ Result: the fix (`validateResponses: false`, PR #3) is correct and merged in `ma
 > Ya el compañero hizo el redeploy, ahora ¿cómo continuamos con los pendientes?
 
 Result: merged `main` (partner's GitHub Actions deploy workflow, runs green), confirmed the production charges API answers `401` without a key, created a local ignored `.env` with the gateway variables and a generated `GATEWAY_ADMIN_KEY` (the `sk_` stays empty for the user to paste locally). Next: merchant sign-up, `sk_` in `.env`, real `402`, then a paid request through the tunnel.
+
+**Prompt 16**
+> listo
+
+Result: the `sk_` key was not saved in the root `.env` (`GATEWAY_FLUPAY_API_KEY=` still empty, no key found in other repo files). Asked the user to save the file and confirm again. No code changes.
+
+**Prompt 17**
+> Ya puse la sk
+
+Result: started `demo-api` and the gateway with the real key. First merchant wallet was USD, so the gateway answered `500 gateway_misconfigured` (currency guard worked); the user switched to a COP merchant key (`flupaytestcop`). Real `402` with a FluPay charge for `50.00 COP`, browser passes free, same `402` through the cloudflared tunnel. Next: paid request with the agent key.
+
+**Prompt 18**
+> ¿Qué es lo que falta exactamente para que el gateway quede bien, funcional y que podamos hacer todo un flujo completo y funcional integrando Interledger y Open Payments?
+
+Result: checklist of what remains for the end-to-end flow: agent key and approved GNAP grant with COP funds, one real `paid_fetch` through the tunnel, stable public URL decision, PR of the new `proxyFlupay` commits, issue #1, reviewer names, demo rehearsal. No code changes.
