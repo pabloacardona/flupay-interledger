@@ -108,3 +108,8 @@ Result: agent detection + stats phase and docs/demo phase done (`detect.ts`, `st
 > Continúa en todas las tareas sin el sk por el momento. Tómate todo el tiempo hasta que las termines todas. Después haz la lista de pendientes.
 
 Result: hardening (`e2e.test.ts` over real HTTP, `503` instead of `502` because Cloudflare tunnels replace 502 bodies, re-verify `not_paid` proofs after 1 s and 2 s), demo script in `apps/gateway/README.md`, issue #1 for the "Regenerar" button in `apps/web`, PR `proxyFlupay` → `main`. 30 tests. Pending: real `sk_` key and a real paid request.
+
+**Prompt 13**
+> Wallet address not found: Error opening file ".../@interledger/open-payments/dist/openapi/specs/wallet-address-server.yaml" ENOENT: no such file or directory ... ¿Por qué me sale este error al momento de poner la wallet address?
+
+Result: merchant sign-up failed in production because `createAuthenticatedClient` reads its OpenAPI YAML specs from `node_modules` at runtime and the Vercel bundle does not ship them. Fix: `validateResponses: false` in `packages/shared/src/op-client.ts`, on its own branch `fix/op-yaml-vercel` from `main` with PR #3, so it can be merged without waiting for the gateway PR.
