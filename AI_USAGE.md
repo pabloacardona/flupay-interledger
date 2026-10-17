@@ -29,7 +29,7 @@ This project follows the [Interledger Hackathon AI policy](https://interledger.o
 | `packages/shared/src/*` (`protocol402.ts`, `money.ts`, `crypto.ts`, `op-client.ts`, `wallet-address.ts`) | 02, 03 | 402 contract (zod), minor-unit money, AES-256-GCM, OP client factory, payment pointers | _pending_ |
 | `apps/agent-wallet/**` (Prisma schema and migrations, grants, payments, REST routes, MCP server) | 02, 03, 05 | Full implementation, checked against the installed SDK type definitions | _pending_ |
 | `apps/web/**` (Prisma schema and migrations, charges API, hosted checkout, merchant and owner dashboards) | 04, 05 | Full implementation; scaffold from `create-next-app` | _pending_ |
-| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `detect.ts`, `stats.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API, agent detection, stats | _pending_ |
+| `apps/gateway/**` (`config.ts`, `pricing.ts`, `flupay.ts`, `paywall.ts`, `detect.ts`, `stats.ts`, `app.ts`, `index.ts`, tests, `gateway.yaml`, `README.md`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy, 402 paywall over the FluPay charges API, agent detection, stats, docs, tunnel script | _pending_ |
 | `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | 06 | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | _pending_ |
 
 ## Files with little or no AI involvement
@@ -102,4 +102,4 @@ Result: advice only: `apps/web` belongs to the teammate, so report the bug to th
 **Prompt 11**
 > Continúa el resto de las fases y después concluyes qué falta. Tenemos solamente 3 horas para terminar todo el proyecto.
 
-Result: _in progress_
+Result: agent detection + stats phase and docs/demo phase done (`detect.ts`, `stats.ts`, `GET /_gateway/stats`, `charge: agents|everyone`, `apps/gateway/README.md`, `tunnel` script with a cloudflared quick tunnel, checked live from the internet). 27 tests, workspace typecheck clean. Pending: real `sk_` key, real paid request, PR to `main`.
