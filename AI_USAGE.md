@@ -118,3 +118,8 @@ Result: merchant sign-up failed in production because `createAuthenticatedClient
 > Wallet address not found: Error opening file "/var/task/node_modules/.pnpm/@interledger+open-payments@7.4.0/.../wallet-address-server.yaml" ENOENT ... Cuando ingreso el wallet address me aparece ese error, ¿por qué si ya lo corregimos con los commits que subí?
 
 Result: the fix (`validateResponses: false`, PR #3) is correct and merged in `main`, and the installed SDK skips loading the YAML specs with it, but Vercel is not connected to GitHub (no deployments or commit statuses), so production keeps the old build until someone runs a production deploy of `flupay-web` (and `flupay-agent-wallet`, which uses the same client). No code changes.
+
+**Prompt 15**
+> Ya el compañero hizo el redeploy, ahora ¿cómo continuamos con los pendientes?
+
+Result: merged `main` (partner's GitHub Actions deploy workflow, runs green), confirmed the production charges API answers `401` without a key, created a local ignored `.env` with the gateway variables and a generated `GATEWAY_ADMIN_KEY` (the `sk_` stays empty for the user to paste locally). Next: merchant sign-up, `sk_` in `.env`, real `402`, then a paid request through the tunnel.
