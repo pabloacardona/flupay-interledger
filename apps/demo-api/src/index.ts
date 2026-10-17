@@ -10,14 +10,14 @@ const app = Fastify({ logger: true });
 app.get("/", async () => ({
   name: "FluPay demo API",
   routes: {
-    "/api/weather": "0.01 USD",
-    "/api/premium/report": "0.05 USD",
+    "/api/weather": "50 COP",
+    "/api/premium/report": "200 COP",
   },
 }));
 
 app.get("/health", async () => ({ ok: true }));
 
-// Priced route (gateway.yaml: /api/* -> 0.01 USD).
+// Priced route (gateway.yaml: /api/* -> 50 COP).
 app.get("/api/weather", async (req) => {
   const { city = "Medellín" } = req.query as { city?: string };
   return {
@@ -28,7 +28,7 @@ app.get("/api/weather", async (req) => {
   };
 });
 
-// Priced route (gateway.yaml: /api/premium/* -> 0.05 USD).
+// Priced route (gateway.yaml: /api/premium/* -> 200 COP).
 app.get("/api/premium/report", async () => ({
   title: "AI agent traffic report",
   period: "2026-10",

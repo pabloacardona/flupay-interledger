@@ -29,7 +29,7 @@ This project follows the [Interledger Hackathon AI policy](https://interledger.o
 | `packages/shared/src/*` (`protocol402.ts`, `money.ts`, `crypto.ts`, `op-client.ts`, `wallet-address.ts`) | 02, 03 | 402 contract (zod), minor-unit money, AES-256-GCM, OP client factory, payment pointers | _pending_ |
 | `apps/agent-wallet/**` (Prisma schema and migrations, grants, payments, REST routes, MCP server) | 02, 03, 05 | Full implementation, checked against the installed SDK type definitions | _pending_ |
 | `apps/web/**` (Prisma schema and migrations, charges API, hosted checkout, merchant and owner dashboards) | 04, 05 | Full implementation; scaffold from `create-next-app` | _pending_ |
-| `apps/gateway/**` | 01 | Skeleton only; the gateway is built in session 06 | _pending_ |
+| `apps/gateway/**` (`config.ts`, `pricing.ts`, tests, `index.ts` proxy, `gateway.yaml`), gateway section of `.env.example` | 01, 06 | Config loading with zod, per-route pricing, reverse proxy passthrough | _pending_ |
 | `apps/demo-api/src/index.ts`, `apps/demo-api/package.json` | 06 | Sample Fastify API (free and priced routes, static demo data), `.env` loading in scripts | _pending_ |
 
 ## Files with little or no AI involvement
@@ -80,4 +80,4 @@ Result: merged `origin/main` (10 teammate commits: Vercel/Neon deploy, merchant 
 **Prompt 7**
 > Cambiamos el enfoque del proyecto. Lee el README y todo el proyecto nuevamente para continuar con la fase de configuración del gateway.
 
-Result: _in progress_
+Result: re-read the project after the teammate's merge. New approach: the gateway charges through the FluPay charges API of `apps/web` (`POST /api/v1/charges`, `POST /api/v1/charges/verify`) with the merchant `sk_` key, so it needs no Open Payments keys or database of its own. Configuration phase done: `gateway.yaml` (upstream + COP prices), `config.ts`, `pricing.ts`, proxy passthrough, 6 unit tests.
