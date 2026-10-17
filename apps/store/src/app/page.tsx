@@ -1,12 +1,11 @@
 import { CoffeeBag } from "@/lib/look";
-import { flupay, isConfigured, storeUrl, type Product } from "@/lib/flupay";
+import { getProducts, storeUrl, type Product } from "@/lib/flupay";
 
 export const dynamic = "force-dynamic";
 
 async function loadProducts(): Promise<Product[] | null> {
-  if (!isConfigured()) return null;
   try {
-    return await flupay.products();
+    return await getProducts();
   } catch {
     return null;
   }
@@ -44,7 +43,7 @@ export default async function Home() {
         <h2 className="font-serif text-3xl font-semibold">Nuestros cafés</h2>
         {products === null ? (
           <p className="mt-6 rounded-2xl border border-dashed border-line bg-paper p-6 text-muted">
-            La tienda todavía no está conectada a FluPay. Configura <code className="font-mono">FLUPAY_SECRET_KEY</code> con la API key del negocio.
+            La tienda todavía no está registrada en FluPay. Regístrala en useflupay.space como negocio con el nombre &quot;Café Andino&quot;.
           </p>
         ) : products.length === 0 ? (
           <p className="mt-6 rounded-2xl border border-dashed border-line bg-paper p-6 text-muted">

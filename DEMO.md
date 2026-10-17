@@ -4,7 +4,7 @@
 
 ## Before going on stage (checklist)
 
-- [ ] `https://useflupay.space` (dashboard) open in tab 1, signed in as **Café Andino** (merchant key in `.demo-credentials.local.md`).
+- [ ] `https://useflupay.space` (dashboard) open in tab 1, signed in as **Café Andino** (its `sk_…` key).
 - [ ] `https://useflupay.space` in a private window, signed in as the **agent owner** (`ok_…`), on the agent's page.
 - [ ] `https://tienda.useflupay.space` in tab 2 and `https://tienda.useflupay.space/pedidos` in tab 3.
 - [ ] Claude with the FluPay connector added (`https://mcp.useflupay.space/mcp/fpk_…` from *API keys → Generar URL*).
@@ -39,13 +39,11 @@
 | `GRANT_INACTIVE` | Approve the cap again on the agent page. |
 | `PRICE_EXCEEDS_MAX` | Raise the agent's max per purchase or ask for a cheaper product. |
 | `ASSET_MISMATCH` | Agent and store wallets must use the same currency (COP). |
-| Store says "no está conectada a FluPay" | `FLUPAY_SECRET_KEY` missing on flupay-store; run the setup script below. |
+| Store says "no está registrada en FluPay" | Register the merchant with the exact name **Café Andino** (slug `cafe-andino`). |
 
-## Setup (once)
+## Setup (once, all in the web)
 
-```bash
-# Registers Café Andino, creates 3 products, sets FLUPAY_SECRET_KEY on Vercel (not printed).
-cd apps/web && ../../node_modules/.bin/tsx --conditions=react-server --env-file=.env.local \
-  --tsconfig tsconfig.json ../../scripts/setup-demo-store.mts '$ilp.interledger-test.dev/<store wallet>'
-# Redeploy the store: GitHub → Actions → Deploy to Vercel → Run workflow
-```
+1. **Store:** https://useflupay.space/signup → *Soy un negocio* → name **Café Andino** (the store finds it as `cafe-andino`), wallet `$ilp.interledger-test.dev/wallet_cop_agent`. Save the `sk_…` key (dashboard login).
+2. **Products** (sidebar → Productos): Café de origen 250 g · 200 · Café descafeinado 250 g · 150 · Café de especialidad 500 g · 300.
+3. Open https://tienda.useflupay.space: the three coffees appear by themselves. No keys or deploys needed.
+4. **Agent:** owner account (`ok_…`), agent with wallet `$ilp.interledger-test.dev/flupaytestcop`, max per purchase ≥ 300, cap approved. *API keys → Generar URL* → add it in Claude as a custom connector.

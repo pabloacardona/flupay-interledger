@@ -1,9 +1,9 @@
-import { flupay, isConfigured, type Charge } from "@/lib/flupay";
+import { getOrders, type Order } from "@/lib/flupay";
 import { LiveRefresh } from "./live";
 
 export const dynamic = "force-dynamic";
 
-const label: Record<Charge["status"], [string, string]> = {
+const label: Record<Order["status"], [string, string]> = {
   pending: ["Esperando pago del agente", "bg-[#fff1d6] text-[#8a5a00]"],
   paid: ["Pagado", "bg-leaf/10 text-leaf"],
   consumed: ["Pagado · pedido confirmado", "bg-leaf/10 text-leaf"],
@@ -11,15 +11,14 @@ const label: Record<Charge["status"], [string, string]> = {
 };
 
 export default async function Pedidos() {
-  let charges: Charge[] = [];
+  let charges: Order[] = [];
   let error: string | null = null;
-  if (!isConfigured()) error = "La tienda todavía no está conectada a FluPay.";
-  else {
-    try {
-      charges = await flupay.charges();
-    } catch (err) {
-      error = (err as Error).message;
-    }
+  try {
+    const orders = await getOrders();
+    if (orders === null) error = "La tienda todavía no está registrada en FluPay.";
+    else charges = orders;
+  } catch (err) {
+    error = (err as Error).message;
   }
   const confirmed = charges.filter((c) => c.status === "consumed" || c.status === "paid");
 
@@ -47,8 +46,8 @@ export default async function Pedidos() {
             return (
               <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-paper p-5 ring-1 ring-line">
                 <div>
-                  <p className="font-medium">{c.description ?? "Pedido"}</p>
-                  <p className="font-mono text-xs text-muted">{(c.consumed_at ?? c.paid_at ?? c.expires_at).slice(0, 19).replace("T", " ")} · CA-{c.id.slice(-6).toUpperCase()}</p>
+                  <p className="font-medium">{c.product ?? "Pedido"}</p>
+                  <p className="font-mono text-xs text-muted">{(c.paid_at ?? c.created_at).slice(0, 19).replace("T", " ")} UTC · {c.id}</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="font-mono font-semibold">{c.price}</span>

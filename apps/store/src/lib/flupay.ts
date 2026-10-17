@@ -1,63 +1,56 @@
-// The store's backend integration with FluPay: plain HTTP calls to the charges API
-// with the store's secret key. This is all a merchant needs to sell to AI agents.
+// The store's integration with FluPay through the hosted store endpoints.
+// No API key needed: FluPay identifies the store by its slug (from the merchant name),
+// creates the Open Payments charges on the store's wallet and verifies payments.
 
 export interface Product {
   id: string;
   name: string;
   description: string | null;
   price: string;
-  active: boolean;
 }
 
-export interface Charge {
+export interface Order {
   id: string;
-  status: "pending" | "paid" | "consumed" | "expired";
+  product: string | null;
   price: string;
-  description: string | null;
-  product_id: string | null;
-  incoming_url: string;
-  payment_required: string;
-  created_at?: string;
+  status: "pending" | "paid" | "consumed" | "expired";
+  created_at: string;
   paid_at: string | null;
-  consumed_at: string | null;
-  expires_at: string;
 }
 
-export class FlupayNotConfigured extends Error {}
-
-function config() {
-  const url = process.env.FLUPAY_API_URL ?? "https://useflupay.space";
-  const key = process.env.FLUPAY_SECRET_KEY;
-  if (!key) throw new FlupayNotConfigured("FLUPAY_SECRET_KEY is not set");
-  return { url, key };
-}
-
-async function call<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const { url, key } = config();
-  const res = await fetch(`${url}${path}`, {
-    ...init,
-    cache: "no-store",
-    headers: { authorization: `Bearer ${key}`, "content-type": "application/json", ...init.headers },
-  });
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(`FluPay ${path} ${res.status}: ${JSON.stringify(body).slice(0, 200)}`);
-  return body as T;
-}
-
-export const flupay = {
-  products: async () => (await call<Product[]>("/api/v1/products")).filter((p) => p.active),
-  charges: () => call<Charge[]>("/api/v1/charges"),
-  createCharge: (productId: string, agentHint?: string) =>
-    call<Charge>("/api/v1/charges", {
-      method: "POST",
-      body: JSON.stringify({ product_id: productId, agent_hint: agentHint, reference: `cafe-andino:${productId}` }),
-    }),
-  verify: (authorization: string, productId: string) =>
-    call<{ valid: boolean; reason: string | null; charge: Charge | null }>("/api/v1/charges/verify", {
-      method: "POST",
-      body: JSON.stringify({ authorization, product_id: productId }),
-    }),
-};
-
-export const isConfigured = () => Boolean(process.env.FLUPAY_SECRET_KEY);
+export const flupayUrl = () => process.env.FLUPAY_API_URL ?? "https://useflupay.space";
+/** Store slug in FluPay: "Café Andino" registers as "cafe-andino". */
+export const storeSlug = () => process.env.FLUPAY_STORE_SLUG ?? "cafe-andino";
 export const storeUrl = () => process.env.STORE_PUBLIC_URL ?? "http://localhost:3002";
+const hosted = (path: string) => `${flupayUrl()}/api/stores/${storeSlug()}${path}`;
+
+/** null when the store is not registered in FluPay yet. */
+export async function getProducts(): Promise<Product[] | null> {
+  const res = await fetch(hosted("/products"), { cache: "no-store" });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`FluPay catalog ${res.status}`);
+  return ((await res.json()) as { products: Product[] }).products;
+}
+
+export async function getOrders(): Promise<Order[] | null> {
+  const res = await fetch(hosted("/orders"), { cache: "no-store" });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`FluPay orders ${res.status}`);
+  return ((await res.json()) as { orders: Order[] }).orders;
+}
+
+/** Forwards the agent's checkout to FluPay; keeps the payment headers (402 / receipt). */
+export async function forwardCheckout(request: Request, body: string): Promise<Response> {
+  const headers: Record<string, string> = { "content-type": "application/json" };
+  for (const name of ["authorization", "x-agent-id"]) {
+    const value = request.headers.get(name);
+    if (value) headers[name] = value;
+  }
+  const res = await fetch(hosted("/checkout"), { method: "POST", headers, body, cache: "no-store" });
+  const out = new Headers({ "content-type": "application/json" });
+  for (const name of ["payment-required", "payment-receipt"]) {
+    const value = res.headers.get(name);
+    if (value) out.set(name, value);
+  }
+  return new Response(await res.text(), { status: res.status, headers: out });
+}
