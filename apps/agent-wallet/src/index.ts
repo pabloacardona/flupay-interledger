@@ -8,7 +8,7 @@ import { registerRoutes } from "./routes.js";
 
 const app = Fastify({ logger: true });
 
-await app.register(cors, { origin: [env.DASHBOARD_URL] });
+app.register(cors, { origin: [env.DASHBOARD_URL] });
 
 app.setErrorHandler((err, req, reply) => {
   if (err instanceof WalletError) return reply.code(err.httpStatus).send(err.toJSON());
@@ -20,4 +20,8 @@ app.setErrorHandler((err, req, reply) => {
 registerRoutes(app);
 registerMcp(app);
 
-await app.listen({ port: env.AGENT_WALLET_PORT, host: "0.0.0.0" });
+// Not awaited: on Vercel, Fastify runs as a Function and the platform handles listen().
+app.listen({ port: env.PORT ?? env.AGENT_WALLET_PORT, host: "0.0.0.0" }).catch((err: unknown) => {
+  app.log.error(err);
+  process.exit(1);
+});

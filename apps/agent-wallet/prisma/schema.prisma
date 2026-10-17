@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 /// Person who funds one or more agents. No login in the MVP.
@@ -84,4 +84,17 @@ model Payment {
 
   /// Never pay the same charge twice.
   @@unique([agentId, incomingUrl])
+}
+
+/// Step-by-step feed for the live demo console (402, quote, payment, 200).
+/// Stored in the database because serverless instances do not share memory.
+model ActivityEvent {
+  id        String   @id @default(cuid())
+  agentId   String
+  requestId String
+  step      String
+  detail    Json?
+  at        DateTime @default(now())
+
+  @@index([agentId, at])
 }

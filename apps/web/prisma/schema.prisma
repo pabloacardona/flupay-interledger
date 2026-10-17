@@ -1,0 +1,93 @@
+// Merchant platform database (seller side): merchants, products, charges.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Merchant {
+  id             String    @id @default(cuid())
+  name           String
+  /// URL-friendly id used for the demo store, e.g. /store/cafe-andino
+  slug           String    @unique
+  email          String?
+  walletAddress  String
+  authServer     String
+  resourceServer String
+  assetCode      String
+  assetScale     Int
+  /// SHA-256 of the secret API key (sk_...). The key is shown once.
+  apiKeyHash     String    @unique
+  /// Last 4 characters, to help the merchant recognise the key.
+  apiKeyLast4    String
+  products       Product[]
+  charges        Charge[]
+  createdAt      DateTime  @default(now())
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  merchantId  String
+  merchant    Merchant @relation(fields: [merchantId], references: [id])
+  name        String
+  description String?
+  /// Minor units of the merchant's asset.
+  priceMinor  Int
+  active      Boolean  @default(true)
+  charges     Charge[]
+  createdAt   DateTime @default(now())
+}
+
+/// One charge = one Open Payments incoming payment on the merchant's wallet.
+model Charge {
+  id          String    @id @default(cuid())
+  merchantId  String
+  merchant    Merchant  @relation(fields: [merchantId], references: [id])
+  productId   String?
+  product     Product?  @relation(fields: [productId], references: [id])
+  description String?
+  /// Merchant's own reference, e.g. an order id.
+  reference   String?
+  incomingUrl String    @unique
+  amountMinor Int
+  assetCode   String
+  assetScale  Int
+  /// pending | paid | consumed | expired
+  status      String
+  /// Free-form hint sent by the agent (X-Agent-Id).
+  agentHint   String?
+  expiresAt   DateTime
+  paidAt      DateTime?
+  consumedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([merchantId, createdAt])
+}
+
+/// Cached non-interactive incoming-payment grant per auth server.
+model PlatformToken {
+  authServer  String   @id
+  /// Encrypted (AES-256-GCM).
+  accessToken String
+  manageUrl   String
+  expiresAt   DateTime
+  updatedAt   DateTime @updatedAt
+}
+
+/// Person who funds AI agents. Agents and their grants live in the agent wallet service;
+/// this row links a dashboard login to the owner record there.
+model AgentOwner {
+  id            String   @id @default(cuid())
+  name          String
+  email         String?
+  /// Owner id in the agent wallet service.
+  walletOwnerId String   @unique
+  /// SHA-256 of the owner key (ok_...). Shown once; it is the login.
+  apiKeyHash    String   @unique
+  apiKeyLast4   String
+  createdAt     DateTime @default(now())
+}

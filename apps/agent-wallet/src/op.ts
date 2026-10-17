@@ -1,16 +1,22 @@
 import { OpenPaymentsClientError, type AuthenticatedClient } from "@interledger/open-payments";
 import { createOpClient } from "@flupay/shared";
-import { env } from "./env.js";
+import { opCredentials } from "./env.js";
+import { ErrorCode, WalletError } from "./errors.js";
 
 let client: Promise<AuthenticatedClient> | undefined;
 
 /** Lazily created authenticated client for the agent-wallet service. */
 export function op(): Promise<AuthenticatedClient> {
-  client ??= createOpClient({
-    walletAddressUrl: env.AGENT_WALLET_CLIENT_WALLET_ADDRESS,
-    keyId: env.AGENT_WALLET_CLIENT_KEY_ID,
-    privateKey: env.AGENT_WALLET_CLIENT_PRIVATE_KEY_PATH,
-  });
+  if (!client) {
+    const credentials = opCredentials();
+    if (!credentials) {
+      return Promise.reject(
+        new WalletError(ErrorCode.OPEN_PAYMENTS_ERROR, "Open Payments client is not configured on this server", 503),
+      );
+    }
+    client = createOpClient(credentials);
+    client.catch(() => (client = undefined));
+  }
   return client;
 }
 
