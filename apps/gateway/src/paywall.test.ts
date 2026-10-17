@@ -78,7 +78,7 @@ before(async () => {
   const address = await upstream.listen({ port: 0, host: "127.0.0.1" });
   flupay = new FakeFlupay();
   upstreamUrl = address;
-  gateway = await buildApp({ upstream: address, routes, adminKey: "admin-key-0123456789" }, flupay, { logger: false });
+  gateway = await buildApp({ upstream: address, routes, adminKey: "admin-key-0123456789" }, flupay, { logger: false }, [1, 1]);
 });
 
 after(async () => {
@@ -143,6 +143,7 @@ test("unpaid or unknown proof gets a fresh 402 with the reason", async () => {
   const res = await gateway.inject({ url: "/api/weather", headers: { authorization: `OpenPayments ${incoming}` } });
   assert.equal(res.statusCode, 402);
   assert.equal(res.json().rejected, "not_paid");
+  assert.equal(flupay.calls.verify, 3, "not_paid is retried twice before giving up");
 
   const unknown = await gateway.inject({ url: "/api/weather", headers: { authorization: "OpenPayments https://evil.example/ip/1" } });
   assert.equal(unknown.json().rejected, "unknown_charge");
@@ -167,10 +168,10 @@ test("merchant currency different from gateway.yaml is a 500, not a wrong charge
   assert.equal(res.json().error, "gateway_misconfigured");
 });
 
-test("FluPay down answers 502", async () => {
+test("FluPay down answers 503", async () => {
   flupay.down = true;
   const res = await gateway.inject({ url: "/api/weather" });
-  assert.equal(res.statusCode, 502);
+  assert.equal(res.statusCode, 503);
   assert.equal(res.json().error, "payment_provider_unavailable");
 });
 
@@ -209,4 +210,17 @@ test("stats need the admin key and count revenue", async () => {
   assert.equal(res.statusCode, 200);
   assert.ok(res.json().paid >= 1);
   assert.match(res.json().revenue.COP, /^\d+\.\d{2}$/);
+});
+
+test("a payment that lands while verifying still passes", async () => {
+  const first = await gateway.inject({ url: "/api/weather" });
+  const incoming = parsePaymentRequiredHeader(first.headers["payment-required"] as string)!.incoming;
+  const realVerify = flupay.verify.bind(flupay);
+  flupay.verify = async (authorization) => {
+    if (flupay.calls.verify === 1) flupay.pay(incoming); // settles after the first check
+    return realVerify(authorization);
+  };
+  const res = await gateway.inject({ url: "/api/weather", headers: { authorization: `OpenPayments ${incoming}` } });
+  flupay.verify = realVerify;
+  assert.equal(res.statusCode, 200);
 });

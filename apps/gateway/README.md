@@ -21,7 +21,7 @@ agent ──> gateway :8080 ──> upstream API (apps/demo-api :3000)
 | Priced route, agent, no proof | `402`, `Payment-Required: {wallet, incoming, amount, assetCode, assetScale, expiresAt}` |
 | Priced route, `Authorization: OpenPayments <incoming url>`, paid | Forwarded once, `Payment-Receipt: <incoming url>`; the proof is not sent upstream |
 | Proof unpaid, used, unknown, or for another route or price | New `402` with `rejected: <reason>` |
-| FluPay down / currency mismatch | `502` / `500` |
+| FluPay down / currency mismatch | `503` / `500` |
 
 A proof only unlocks the route pattern it was issued for (stored as the charge `reference`), in the same currency and for at least the configured price.
 

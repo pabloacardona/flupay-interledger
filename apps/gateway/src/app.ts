@@ -17,6 +17,7 @@ export async function buildApp(
   config: Pick<GatewayConfig, "upstream" | "routes"> & Partial<Pick<GatewayConfig, "charge" | "adminKey">>,
   flupay: ChargesApi,
   options: FastifyServerOptions = { logger: true },
+  settleRetryMs?: number[],
 ) {
   const app = Fastify(options);
   const stats = new GatewayStats();
@@ -33,7 +34,7 @@ export async function buildApp(
     return stats.toJSON();
   });
 
-  app.addHook("onRequest", createPaywall({ routes: config.routes, flupay, charge: config.charge, stats }));
+  app.addHook("onRequest", createPaywall({ routes: config.routes, flupay, charge: config.charge, stats, settleRetryMs }));
 
   await app.register(proxy, { upstream: config.upstream, prefix: "/" });
   return app;

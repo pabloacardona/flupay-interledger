@@ -44,9 +44,13 @@ export interface PaywallOptions {
   flupay: ChargesApi;
   charge?: ChargeMode;
   stats?: GatewayStats;
+  /** Waits between verify attempts when the payment has not landed yet. */
+  settleRetryMs?: number[];
 }
 
-export function createPaywall({ routes, flupay, charge: mode = "agents", stats = new GatewayStats() }: PaywallOptions) {
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export function createPaywall({ routes, flupay, charge: mode = "agents", stats = new GatewayStats(), settleRetryMs = [1_000, 2_000] }: PaywallOptions) {
   return async function paywall(req: FastifyRequest, reply: FastifyReply) {
     if (req.url.startsWith(GATEWAY_PREFIX)) return;
     stats.requests++;
@@ -71,7 +75,14 @@ export function createPaywall({ routes, flupay, charge: mode = "agents", stats =
       let rejected: string | null = null;
       const authorization = req.headers.authorization;
       if (parsePaymentAuthorization(authorization)) {
-        const result = await flupay.verify(authorization!);
+        // "not_paid" does not consume the charge, so it is safe to ask again while the
+        // agent's outgoing payment settles on the network.
+        let result = await flupay.verify(authorization!);
+        for (const wait of settleRetryMs) {
+          if (result.valid || result.reason !== "not_paid") break;
+          await sleep(wait);
+          result = await flupay.verify(authorization!);
+        }
         if (result.valid && chargeCovers(result.charge, rule, price)) {
           // The upstream does not understand our proof; never forward it.
           delete req.headers.authorization;
@@ -106,7 +117,8 @@ export function createPaywall({ routes, flupay, charge: mode = "agents", stats =
     } catch (err) {
       if (!(err instanceof FlupayError)) throw err;
       req.log.error({ err: err.message }, "FluPay charges API failed");
-      return reply.code(502).send({ error: "payment_provider_unavailable" });
+      // 503, not 502: tunnels and CDNs (Cloudflare) replace 502 bodies with their own HTML page.
+      return reply.code(503).send({ error: "payment_provider_unavailable" });
     }
   };
 }
